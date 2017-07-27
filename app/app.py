@@ -4,6 +4,7 @@ from src.models import User
 from src import app, db, auth
 from src.authentication import Authentication
 from src.initialize_db import InitializeDB
+from src.snippets.snippets import dialA, dialB
 import os
 from flask import abort, request, jsonify, g, url_for
 from src.aipcloud.text import sentiment
@@ -13,7 +14,7 @@ import numpy as np
 import logging
 from time import time
 import subprocess
-from urllib import (request as rqst)
+from urllib import (request as rqst, error)
 
 
 @auth.verify_password
@@ -27,6 +28,8 @@ def initialization():
     try:
         print("-------------------------->>No database.")
         InitializeDB(db)
+        import nltk
+        nltk.download("punkt")
         return "200"
     except:
         if not os.path.exists('database/db.sqlite'):
@@ -107,6 +110,27 @@ def customer_service_analyzer():
                     'Remboursement': round(results[2] * 100, 2) })
 
 
+@app.route('/analyze/dialogue', methods=['GET'])
+@auth.login_required
+def dialogue_analyzer():
+    user = g.user
+    user.verify_path('/analyze/dialogue')
+    dialogueAnalyzer = sentiment.DialogueSentimentAnalyzer()
+    dialogueAnalyzer.load()
+    resultsA, resultsB, estim = dialogueAnalyzer.analyze(dialB, dialA, verbose=False)
+    return jsonify({"Positif A": round(resultsA[2] * 100, 2),
+                    "Neutre A": round(resultsA[1] * 100, 2),
+                    "Negatif A": round(resultsA[0] * 100, 2),
+                    "Pertinence A": round(estim[0] * 100, 2),
+                    "Pente A": round(estim[3], 4),
+                    "Positif B": round(resultsB[2] * 100, 2),
+                    "Neutre B": round(resultsB[1] * 100, 2),
+                    "Negatif B": round(resultsB[0] * 100, 2),
+                    "Pertinence B": round(estim[1] * 100, 2),
+                    "Pente B": round(estim[4], 4),
+                    "Pertinence totale": round(estim[2] * 100, 2)})
+
+
 @app.route('/image', methods=['POST'])
 @auth.login_required
 def image_analyzer():
@@ -115,28 +139,31 @@ def image_analyzer():
     url = request.json.get('image-url')
     if url is None:
         abort(400)
-    # get the image format
-    response = rqst.urlopen(url)
-    mime = response.info()['Content-type']
-    frmt = mime.split('/')[-1]
-    # download the image
-    if mime.endswith("jpeg"):
-        image_name = 'database/image.jpg'
-    else:
-        image_name = 'database/image.' + frmt
-    args = ['wget', '-O', image_name, url]
-    subprocess.call(args)
-    # Call the image analysis model
-    imgClassifier = classifier.MultiLabelClassifier()
-    imgClassifier.load()
-    results = imgClassifier.classify( image_name, nbClasses=1000)
-    data = {}
-    for r in results:
-    	if r[1] > 0.005:
-            data[r[0]] = round((r[1] * 100), 2)
-    # Delete the image after getting the analysis results
-    subprocess.call(['rm', '-f', image_name])
-    return jsonify(data)
+    try:
+        # get the image format
+        response = rqst.urlopen(url)
+        mime = response.info()['Content-type']
+        frmt = mime.split('/')[-1]
+        # download the image
+        if mime.endswith("jpeg"):
+            image_name = 'database/image.jpg'
+        else:
+            image_name = 'database/image.' + frmt
+        args = ['wget', '-O', image_name, url]
+        subprocess.check_call(args)
+        # Call the image analysis model
+        imgClassifier = classifier.MultiLabelClassifier()
+        imgClassifier.load()
+        results = imgClassifier.classify( image_name, nbClasses=1000)
+        data = {}
+        for r in results:
+        	if r[1] > 0.005:
+                    data[r[0]] = round((r[1] * 100),2)
+        # Delete the image after getting the analysis results
+        subprocess.call(['rm', '-f', image_name])
+        return jsonify(data)
+    except error.HTTPError as err:
+        return (jsonify({'Error in the image URL': 'Code Error: {}'.format(err.code)}), 400, {})
 
 
 @app.errorhandler(500)

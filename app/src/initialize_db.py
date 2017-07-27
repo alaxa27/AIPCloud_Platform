@@ -19,7 +19,7 @@ class InitializeDB(object):
         db.session.commit()
         print("Database populated.")
         # Grant access to text methods for the first user
-        l = ['/analyze/sentence', '/analyze/text', '/analyze/customer']
+        l = ['/analyze/sentence', '/analyze/text', '/analyze/customer', '/analyze/dialogue']
         for path in l:
             db.session.add(UserAccess(path=path, timeref=int(time()), user=user1))
             db.session.commit()
