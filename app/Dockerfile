@@ -1,0 +1,7 @@
+FROM python:3.5
+
+# Copying the requirements for installation to take
+# advantage of the caching.
+COPY requirements.txt .
+RUN pip3 install -r ./requirements.txt
+RUN pip3 install gensim 
