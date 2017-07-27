@@ -27,6 +27,8 @@ def initialization():
     try:
         print("-------------------------->>No database.")
         InitializeDB(db)
+        import nltk
+        nltk.download("punkt")
         return "200"
     except:
         if not os.path.exists('database/db.sqlite'):
