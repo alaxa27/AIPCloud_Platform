@@ -13,7 +13,7 @@ import numpy as np
 import logging
 from time import time
 import subprocess
-import urllib2
+from urllib import (request as rqst)
 
 
 @auth.verify_password
@@ -22,11 +22,33 @@ def verify_password(email_or_token, password):
     return authenticate.verify_password(email_or_token, password)
 
 
+@app.route('/init')
+def initialization():
+    try:
+        print("-------------------------->>No database.")
+        InitializeDB(db)
+        return "200"
+    except:
+        if not os.path.exists('database/db.sqlite'):
+            return "400"
+
+
 @app.route('/token')
 @auth.login_required
 def get_auth_token():
-    timeref = g.user.timeref
+    access = g.user.access.all()
+    counter = 0
+    l = []
+    for element in access:
+        if element.timeref >= int(time()) - 86400:
+            l.append(element.timeref)
+            counter = 1
+    if counter == 0:
+        abort(403)
+    timeref = max(l)
     expiration = timeref + 86400 - int(time())
+    if expiration <= 0:
+        abort(403)
     m, s = divmod(expiration, 60)
     h, m = divmod(m, 60)
     token = g.user.generate_auth_token(expiration)
@@ -36,17 +58,12 @@ def get_auth_token():
 @app.route('/analyze/sentence', methods=['POST'])
 @auth.login_required
 def analyze_sentence():
-    access = g.user.access.all()
-    counter = 0
-    for element in access:
-        if element.path == '/analyze/sentence' and element.timeref >= int(time()) - 86400:
-            counter = 1
-    if counter == 0:
-        abort(403)
+    user = g.user
+    user.verify_path('/analyze/sentence')
     sentence = request.json.get('sentence')
     if sentence is None:
         abort(400)
-    sentence = sentence.encode('utf8')
+    sentence = sentence
     sentenceAnalyzer = sentiment.SentenceSentimentAnalyzer()
     sentenceAnalyzer.load()
     results = sentenceAnalyzer.analyze(sentence)
@@ -58,17 +75,12 @@ def analyze_sentence():
 @app.route('/analyze/text', methods=['POST'])
 @auth.login_required
 def analyze_text():
-    access = g.user.access.all()
-    counter = 0
-    for element in access:
-        if element.path == '/analyze/text' and element.timeref >= int(time()) - 86400:
-            counter = 1
-    if counter == 0:
-        abort(403)
+    user = g.user
+    user.verify_path('/analyze/text')
     text = request.json.get('text')
     if text is None:
         abort(400)
-    text = text.encode('utf8')
+    text = text
     textAnalyzer = sentiment.TextSentimentAnalyzer()
     textAnalyzer.load()
     results = textAnalyzer.analyze(text, verbose=False)
@@ -81,17 +93,12 @@ def analyze_text():
 @app.route('/analyze/customer', methods=['POST'])
 @auth.login_required
 def customer_service_analyzer():
-    access = g.user.access.all()
-    counter = 0
-    for element in access:
-        if element.path == '/analyze/customer' and element.timeref >= int(time()) - 86400:
-            counter = 1
-    if counter == 0:
-        abort(403)
+    user = g.user
+    user.verify_path('/analyze/customer')
     sentence = request.json.get('sentence')
     if sentence is None:
         abort(400)
-    sentence = sentence.encode('utf8')
+    sentence = sentence
     textCS = sentiment.CustomerServiceAnalyzer()
     textCS.load()
     results = textCS.analyze(sentence)
@@ -103,19 +110,14 @@ def customer_service_analyzer():
 @app.route('/image', methods=['POST'])
 @auth.login_required
 def image_analyzer():
-    access = g.user.access.all()
-    counter = 0
-    for element in access:
-        if element.path == '/image' and element.timeref >= int(time()) - 86400:
-            counter = 1
-    if counter == 0:
-        abort(403)
+    user = g.user
+    user.verify_path('/image')
     url = request.json.get('image-url')
     if url is None:
         abort(400)
     # get the image format
-    reqst = urllib2.urlopen(url)
-    mime = reqst.info()['Content-type']
+    response = rqst.urlopen(url)
+    mime = response.info()['Content-type']
     frmt = mime.split('/')[-1]
     # download the image
     if mime.endswith("jpeg"):
@@ -147,7 +149,9 @@ def server_error(e):
 
 
 if __name__ == '__main__':
+    print("Checking if databse exists.")
     if not os.path.exists('database/db.sqlite'):
+        print("-------------------------->>No database.")
         InitializeDB(db)
     # This is used when running locally. Gunicorn is used to run the
     # application on Google App Engine. See entrypoint in app.yaml.

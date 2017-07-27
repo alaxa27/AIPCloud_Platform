@@ -2,7 +2,8 @@ from . import app, db
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from passlib.apps import custom_app_context as pwd_context
-
+from flask import abort
+from time import time
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -17,9 +18,17 @@ class User(db.Model):
         return pwd_context.verify(password, self.password_hash)
 
     def generate_auth_token(self, expiration):
-            s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
-            return s.dumps({'id': self.id})
+        s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
+        return s.dumps({'id': self.id})
 
+    def verify_path(self, path):
+        access = self.access.all()
+        counter = 0
+        for element in access:
+            if element.path == path and element.timeref >= int(time()) - 86400:
+                counter = 1
+        if counter == 0:
+            abort(403)
     @staticmethod
     def verify_auth_token(token):
         s = Serializer(app.config['SECRET_KEY'])

@@ -4,8 +4,11 @@ from time import time
 class InitializeDB(object):
 
     def __init__(self, db):
+        print("===========================================================")
+        print("Initializing database.")
         # Create the database
         db.create_all()
+        print("Database created.")
         # Add 2 users
         user1 = User(email='text@jdc.fr')
         user1.hash_password('jdc')
@@ -14,6 +17,7 @@ class InitializeDB(object):
         db.session.add(user1)
         db.session.add(user2)
         db.session.commit()
+        print("Database populated.")
         # Grant access to text methods for the first user
         l = ['/analyze/sentence', '/analyze/text', '/analyze/customer']
         for path in l:

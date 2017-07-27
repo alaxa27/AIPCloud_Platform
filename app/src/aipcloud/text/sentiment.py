@@ -19,13 +19,12 @@ from keras.layers.convolutional import MaxPooling1D
 from keras.layers.embeddings import Embedding
 from keras.preprocessing import sequence
 from keras.models import model_from_json
-#import matplotlib.pyplot as plt
-
+import matplotlib.pyplot as plt
 
 from . import word2vec
+from ..statistics import regression
 
 from ..exceptions import UnloadedException
-
 
 class SentenceSentimentAnalyzer:
 
@@ -51,7 +50,7 @@ class SentenceSentimentAnalyzer:
 		if not(self.loaded):
 			raise UnloadedException()
 
-		text = text.decode('utf8').lower()
+		text = text.lower()
 		# We transform our sentence into word tokens
 		tokens = nltk.word_tokenize(text)
 
@@ -70,7 +69,6 @@ class SentenceSentimentAnalyzer:
 
 class TextSentimentAnalyzer:
 
-	MAX_LENGTH = 66
 	TOP_WORDS = 40000
 
 	def __init__(self):
@@ -92,6 +90,7 @@ class TextSentimentAnalyzer:
 
 		classes = []
 		weights = []
+		lerp = []
 
 		for line in lines:
 			if len(line) > 10:
@@ -100,6 +99,7 @@ class TextSentimentAnalyzer:
 				w /= 3
 				classes.append(an)
 				weights.append(w)
+				lerp.append((an[2] + an[1]) / 3.0)
 
 		neg = [ classes[i][0] * weights[i] for i in range(len(classes)) ]
 		mid = [ classes[i][1] * weights[i] for i in range(len(classes)) ]
@@ -109,6 +109,20 @@ class TextSentimentAnalyzer:
 		distrib = [ sum(neg) / sumWeight, sum(mid) / sumWeight, sum(pos) / sumWeight ]
 		accuracy = abs(distrib[0] - distrib[1]) + abs(distrib[2] - distrib[1])
 		accuracy = accuracy**(1/3)
+		means = [ sum(neg) / N, sum(mid) / N, sum(pos) / N ]
+		var = [ sum((neg - np.repeat(means[0], N))**2) / N,
+			sum((mid - np.repeat(means[1], N))**2) / N,
+			sum((pos - np.repeat(means[2], N))**2) / N ]
+		print("Means")
+		print(means)
+		print("Standard deviations")
+		print([var[i]**(0.5) for i in range(len(var))])
+
+		regModel = regression.SimpleLinearRegressionModel()
+		regModel.fit(range(N), lerp)
+		print("Slope")
+		slope = regModel.parameters()[1] * N
+		print(slope)
 
 		if verbose:
 			eltime = time.time() - eltime
@@ -120,11 +134,66 @@ class TextSentimentAnalyzer:
 			plt.plot(range(N), np.repeat(distrib[0], N), color="r")
 			plt.plot(range(N), np.repeat(distrib[1], N), color="b")
 			plt.plot(range(N), np.repeat(distrib[2], N), color="g")
+			plt.plot(range(N), lerp, color="black")
+			plt.plot([0, N-1], regModel.predict([0, N-1]), color="m")
 			plt.show()
 
-		results = [ accuracy ]
+		results = [ accuracy, slope ]
 		results = np.hstack((distrib, results))
 		return results
+
+	def summary(self, inputVector):
+		distrib = inputVector[0:3]
+		accuracy = inputVector[3]
+		slope = inputVector[4]
+
+		frenchClasses = [ "négatif", "neutre", "positif" ]
+		sentimentIndex = 0
+		# Index from -2 to 2
+
+		summary = "Le texte est "
+		if accuracy >= 0.75:
+			summary += frenchClasses[np.argmax(distrib)] + "."
+		elif accuracy >= 0.5:
+			summary += "plutôt neutre "
+			argmin = np.argmin(distrib)
+			if argmin == 1:
+				summary += "avec des grandes variations positives et négatives."
+			else:
+				summary += frenchClasses[2 - argmin] + "."
+		elif accuracy >= 0.35:
+			summary += "semble être plutôt neutre "
+			argmin = np.argmin(distrib)
+			if argmin == 1:
+				summary += "avec des grandes variations positives et négatives, "
+			else:
+				summary += frenchClasses[2 - argmin] + ", "
+			summary += "mais l'analyse est moyennement pertinente."
+		else:
+			summary = "L'analyse n'est pas assez pertinente sur ce texte."
+
+		if accuracy >= 0.35:
+			if abs(slope) >= 0.4:
+				if slope > 0:
+					summary += " Le texte est négatif au début et positif vers la fin."
+				else:
+					summary += " Le texte est positif au début et négatif vers la fin."
+			elif abs(slope) >= 0.15:
+				argmin = np.argmin(distrib)
+				if slope > 0:
+					if argmin == 2:
+						summary += " Le texte est neutre au début et positif vers la fin."
+					elif argmin == 1:
+						summary += " Le texte est négatif au début et neutre vers la fin."
+				elif slope < 0:
+					if argmin == 0:
+						summary += " Le texte est neutre au début et négatif vers la fin."
+					elif argmin == 1:
+						summary += " Le texte est positif au début et neutre vers la fin."
+			else:
+				summary += " Le sentiment est constant tout au long du texte."
+		return summary
+
 
 class CustomerServiceAnalyzer:
 
