@@ -5,30 +5,40 @@ from passlib.apps import custom_app_context as pwd_context
 from flask import abort
 from time import time
 
+
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(32), index=True)
-    password_hash = db.Column(db.String(64))
-    access = db.relationship('UserAccess', backref='user', lazy='dynamic')
+    password_hash = db.Column(db.String(32))
+    points = db.relationship("Authorization", backref='user', lazy='dynamic')
+
+    def grant_access_to(self, point):
+        self.points.append(point)
+
+    def unauthorize(self, point):
+        self.ponts.remove(point)
+
     def hash_password(self, password):
-        self.password_hash = pwd_context.encrypt(password)
+        self.password_hash = password
 
     def verify_password(self, password):
-        return pwd_context.verify(password, self.password_hash)
+        return password == self.password_hash
 
     def generate_auth_token(self, expiration):
         s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
         return s.dumps({'id': self.id})
 
-    def verify_path(self, path):
-        access = self.access.all()
+    def verify_access(self, path):
+        point = AccessPoint.query.filter_by(path=path).first()
+        auths = self.points
         counter = 0
-        for element in access:
-            if element.path == path and element.timeref >= int(time()) - 86400:
+        for element in auths:
+            if element.point_id == point.id and element.timeref >= int(time()) - 86400:
                 counter = 1
         if counter == 0:
             abort(403)
+
     @staticmethod
     def verify_auth_token(token):
         s = Serializer(app.config['SECRET_KEY'])
@@ -42,10 +52,15 @@ class User(db.Model):
         return user
 
 
-
-class UserAccess(db.Model):
-    __tablename__ = 'user_access'
+class AccessPoint(db.Model):
+    __tablename__ = 'access_points'
     id = db.Column(db.Integer, primary_key=True)
     path = db.Column(db.String(20), index=True)
+    users = db.relationship("Authorization", backref='point', lazy='dynamic')
+
+
+class Authorization(db.Model):
+    __tablename__ = 'authorizations'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    point_id = db.Column(db.Integer, db.ForeignKey('access_points.id'), primary_key=True)
     timeref = db.Column(db.Integer)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
