@@ -5,7 +5,6 @@ from src import app, db, auth
 from src.authentication import Authentication
 from src.initialize_db import InitializeDB
 from src.snippets.snippets import dialA, dialB
-import os
 from flask import abort, request, jsonify, g, url_for
 from src.aipcloud.text import sentiment
 from src.aipcloud.image import classifier, utils
@@ -23,26 +22,26 @@ def verify_password(email_or_token, password):
     return authenticate.verify_password(email_or_token, password)
 
 
-@app.route('/init')
-def initialization():
-    try:
-        print("-------------------------->>No database.")
-        InitializeDB(db)
-        import nltk
-        nltk.download("punkt")
-        return "200"
-    except:
-        if not os.path.exists('database/db.sqlite'):
-            return "400"
+# @app.route('/init')
+# def initialization():
+#     try:
+#         print("-------------------------->>No database.")
+#         InitializeDB(db)
+#         import nltk
+#         nltk.download("punkt")
+#         return "200"
+#     except:
+#         if not os.path.exists('database/db.sqlite'):
+#             return "400"
 
 
 @app.route('/token')
 @auth.login_required
 def get_auth_token():
-    access = g.user.access.all()
+    auths = g.user.points
     counter = 0
     l = []
-    for element in access:
+    for element in auths:
         if element.timeref >= int(time()) - 86400:
             l.append(element.timeref)
             counter = 1
@@ -62,11 +61,10 @@ def get_auth_token():
 @auth.login_required
 def analyze_sentence():
     user = g.user
-    user.verify_path('/analyze/sentence')
+    user.verify_access('/analyze/sentence')
     sentence = request.json.get('sentence')
     if sentence is None:
         abort(400)
-    sentence = sentence
     sentenceAnalyzer = sentiment.SentenceSentimentAnalyzer()
     sentenceAnalyzer.load()
     results = sentenceAnalyzer.analyze(sentence)
@@ -79,11 +77,10 @@ def analyze_sentence():
 @auth.login_required
 def analyze_text():
     user = g.user
-    user.verify_path('/analyze/text')
+    user.verify_access('/analyze/text')
     text = request.json.get('text')
     if text is None:
         abort(400)
-    text = text
     textAnalyzer = sentiment.TextSentimentAnalyzer()
     textAnalyzer.load()
     results = textAnalyzer.analyze(text, verbose=False)
@@ -97,11 +94,10 @@ def analyze_text():
 @auth.login_required
 def customer_service_analyzer():
     user = g.user
-    user.verify_path('/analyze/customer')
+    user.verify_access('/analyze/customer')
     sentence = request.json.get('sentence')
     if sentence is None:
         abort(400)
-    sentence = sentence
     textCS = sentiment.CustomerServiceAnalyzer()
     textCS.load()
     results = textCS.analyze(sentence)
@@ -114,7 +110,7 @@ def customer_service_analyzer():
 @auth.login_required
 def dialogue_analyzer():
     user = g.user
-    user.verify_path('/analyze/dialogue')
+    user.verify_access('/analyze/dialogue')
     dialogueAnalyzer = sentiment.DialogueSentimentAnalyzer()
     dialogueAnalyzer.load()
     resultsA, resultsB, estim = dialogueAnalyzer.analyze(dialB, dialA, verbose=False)
@@ -135,7 +131,7 @@ def dialogue_analyzer():
 @auth.login_required
 def image_analyzer():
     user = g.user
-    user.verify_path('/image')
+    user.verify_access('/image')
     url = request.json.get('image-url')
     if url is None:
         abort(400)
@@ -164,6 +160,8 @@ def image_analyzer():
         return jsonify(data)
     except error.HTTPError as err:
         return (jsonify({'Error in the image URL': 'Code Error: {}'.format(err.code)}), 400, {})
+    except error.URLError as e:
+        return (jsonify({'Error': 'There is an error in the image URL'}), 400, {})
 
 
 @app.errorhandler(500)
@@ -176,10 +174,11 @@ def server_error(e):
 
 
 if __name__ == '__main__':
-    print("Checking if databse exists.")
-    if not os.path.exists('database/db.sqlite'):
-        print("-------------------------->>No database.")
-        InitializeDB(db)
-    # This is used when running locally. Gunicorn is used to run the
-    # application on Google App Engine. See entrypoint in app.yaml.
+    import nltk
+    nltk.download("punkt")
+    # print("Checking if databse exists.")
+    # if not os.path.exists('database/db.sqlite'):
+    #     print("-------------------------->>No database.")
+    #     InitializeDB(db)
+    # This is used when running locally.
     app.run(host='0.0.0.0', debug=True)

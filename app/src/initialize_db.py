@@ -1,14 +1,11 @@
-from .models import User, UserAccess
+from .models import User, AccessPoint, Authorization
 from time import time
 
 class InitializeDB(object):
 
     def __init__(self, db):
-        print("===========================================================")
-        print("Initializing database.")
         # Create the database
         db.create_all()
-        print("Database created.")
         # Add 2 users
         user1 = User(email='text@jdc.fr')
         user1.hash_password('jdc')
@@ -17,12 +14,22 @@ class InitializeDB(object):
         db.session.add(user1)
         db.session.add(user2)
         db.session.commit()
-        print("Database populated.")
+        # Add acces points to the data base
+        paths = ['/analyze/sentence', '/analyze/text', '/analyze/customer', '/analyze/dialogue', '/image']
+        for path in paths:
+            db.session.add(AccessPoint(path=path))
+            db.session.commit()
         # Grant access to text methods for the first user
         l = ['/analyze/sentence', '/analyze/text', '/analyze/customer', '/analyze/dialogue']
         for path in l:
-            db.session.add(UserAccess(path=path, timeref=int(time()), user=user1))
+            auth = Authorization(timeref=int(time()))
+            ap = AccessPoint.query.filter_by(path=path).first()
+            auth.point = ap
+            user1.grant_access_to(auth)
             db.session.commit()
         # Grant access to image method for the second user
-        db.session.add(UserAccess(path='/image', timeref=int(time()), user=user2))
+        auth = Authorization(timeref=int(time()))
+        ap = AccessPoint.query.filter_by(path='/image').first()
+        auth.point = ap
+        user2.grant_access_to(auth)
         db.session.commit()
