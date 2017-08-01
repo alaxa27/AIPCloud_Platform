@@ -16,7 +16,7 @@ from time import time
 import subprocess
 from urllib import (request as rqst, error)
 
-app = CORS(app)
+CORS(app)
 
 
 @auth.verify_password
