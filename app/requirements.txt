@@ -18,3 +18,5 @@ matplotlib==2.0.2
 Pillow
 opencv-python
 PyMySQL
+scikit-learn
+flask-cors
