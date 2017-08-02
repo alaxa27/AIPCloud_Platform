@@ -3,11 +3,11 @@
 from src.models import User
 from src import app, db, auth
 from src.authentication import Authentication
-from src.initialize_db import InitializeDB
+# from src.initialize_db import InitializeDB
 from src.snippets.snippets import dialA, dialB
 from flask import abort, request, jsonify, g, url_for
 from flask_cors import CORS, cross_origin
-from src.aipcloud.text import sentiment
+from src.aipcloud.text import sentiment, extraction
 from src.aipcloud.image import classifier, utils
 import cv2
 import numpy as np
@@ -28,14 +28,16 @@ def verify_password(email_or_token, password):
 @app.route('/init')
 def initialization():
     try:
-        print("-------------------------->>No database.")
-        InitializeDB(db)
+        # print("-------------------------->>No database.")
+        # InitializeDB(db)
+        # The database is already initialized
         import nltk
         nltk.download("punkt")
+        nltk.download("stopwords")
+        nltk.download("averaged_perceptron_tagger")
         return "200"
     except:
-        if not os.path.exists('database/db.sqlite'):
-            return "400"
+        return "400"
 
 
 @app.route('/token')
@@ -90,7 +92,11 @@ def analyze_text():
     return jsonify({'Positif': round(results[2] * 100, 2),
                     'Neutre': round(results[1] * 100, 2),
                     'Negatif': round(results[0] * 100, 2),
-                    'Pertinence': round(results[3] * 100, 2)})
+                    'Pertinence': round(results[3] * 100, 2),
+                    'Pente': round(results[4], 4),
+                    'Lerp': round(results[5], 4),
+                    'Variance': round(results[6], 4),
+                    'Resume': textAnalyzer.summary(results)})
 
 
 @app.route('/analyze/customer', methods=['POST'])
@@ -128,6 +134,23 @@ def dialogue_analyzer():
                     "Pertinence B": round(estim[1] * 100, 2),
                     "Pente B": round(estim[4], 4),
                     "Pertinence totale": round(estim[2] * 100, 2)})
+
+
+@app.route('/analyze/extraction', methods=['POST'])
+@auth.login_required
+def keywords_extraction():
+    user = g.user
+    user.verify_access('/analyze/extraction')
+    text = request.json.get('text')
+    if text is None:
+        abort(400)
+    keywords = extraction.KeywordExtraction()
+    keywords.load()
+    keywords = keywords.extract(text, keywordCount=8, verbose=True)
+    data = {}
+    for key in keywords:
+        data[key[0]] = round(key[1], 4)
+    return jsonify(data)
 
 
 @app.route('/image', methods=['POST'])
@@ -179,9 +202,6 @@ def server_error(e):
 if __name__ == '__main__':
     import nltk
     nltk.download("punkt")
-    # print("Checking if databse exists.")
-    # if not os.path.exists('database/db.sqlite'):
-    #     print("-------------------------->>No database.")
-    #     InitializeDB(db)
-    # This is used when running locally.
+    nltk.download("stopwords")
+    nltk.download("averaged_perceptron_tagger")
     app.run(host='0.0.0.0', debug=True)
