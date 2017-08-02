@@ -15,12 +15,12 @@ class InitializeDB(object):
         db.session.add(user2)
         db.session.commit()
         # Add acces points to the data base
-        paths = ['/analyze/sentence', '/analyze/text', '/analyze/customer', '/analyze/dialogue', '/image']
+        paths = ['/analyze/sentence', '/analyze/text', '/analyze/customer', '/analyze/dialogue', '/analyze/extraction', '/image']
         for path in paths:
             db.session.add(AccessPoint(path=path))
             db.session.commit()
         # Grant access to text methods for the first user
-        l = ['/analyze/sentence', '/analyze/text', '/analyze/customer', '/analyze/dialogue']
+        l = paths[:-1]
         for path in l:
             auth = Authorization(timeref=int(time()))
             ap = AccessPoint.query.filter_by(path=path).first()
