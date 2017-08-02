@@ -20,3 +20,4 @@ opencv-python
 PyMySQL
 scikit-learn
 flask-cors
+networkx==1.11
