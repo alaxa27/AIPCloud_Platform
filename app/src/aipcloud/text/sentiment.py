@@ -99,7 +99,7 @@ class TextSentimentAnalyzer:
 				w /= 3
 				classes.append(an)
 				weights.append(w)
-				lerp.append((an[2] + an[1]) / 3.0)
+				lerp.append((an[2] + an[1]) / 2.0)
 
 		N = len(classes)
 
@@ -111,6 +111,8 @@ class TextSentimentAnalyzer:
 		distrib = [ sum(neg) / sumWeight, sum(mid) / sumWeight, sum(pos) / sumWeight ]
 		accuracy = abs(distrib[0] - distrib[1]) + abs(distrib[2] - distrib[1])
 		accuracy = accuracy**(1/3)
+		mainLerp = distrib[2] - distrib[0]
+		variance = sum([abs(lerp[i+1] - lerp[i]) for i in range(N - 1)]) / (N - 1)
 
 		regModel = regression.SimpleLinearRegressionModel()
 		regModel.fit(range(N), lerp)
@@ -130,7 +132,7 @@ class TextSentimentAnalyzer:
 			plt.plot([0, N-1], regModel.predict([0, N-1]), color="m")
 			plt.show()
 
-		results = [ accuracy, slope ]
+		results = [ accuracy, slope, mainLerp, variance ]
 		results = np.hstack((distrib, results))
 		return results
 
