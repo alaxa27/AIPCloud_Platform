@@ -31,16 +31,15 @@ class User(db.Model):
         return s.dumps({'id': self.id})
 
     def verify_access(self, path):
-        if self.admin == True:
-            pass
-        point = AccessPoint.query.filter_by(path=path).first()
-        auths = self.points
-        counter = 0
-        for element in auths:
-            if element.point_id == point.id and element.timeref >= int(time()) - 86400:
-                counter = 1
-        if counter == 0:
-            abort(403)
+        if not self.admin:
+            point = AccessPoint.query.filter_by(path=path).first()
+            auths = self.points
+            counter = 0
+            for element in auths:
+                if element.point_id == point.id and element.timeref >= int(time()) - 86400:
+                    counter = 1
+            if counter == 0:
+                abort(403)
 
     @staticmethod
     def verify_auth_token(token):
