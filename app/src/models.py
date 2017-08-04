@@ -11,6 +11,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(32))
+    admin = db.Column(db.Boolean, default=False)
     points = db.relationship("Authorization", backref='user', lazy='dynamic')
 
     def grant_access_to(self, point):
@@ -30,6 +31,8 @@ class User(db.Model):
         return s.dumps({'id': self.id})
 
     def verify_access(self, path):
+        if self.admin == True:
+            pass
         point = AccessPoint.query.filter_by(path=path).first()
         auths = self.points
         counter = 0
