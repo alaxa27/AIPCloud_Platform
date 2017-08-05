@@ -150,7 +150,7 @@ def keywords_extraction():
     data = []
     for key in keywords:
         data.append({"keyword": key[0], "score": round(key[1], 4)})
-    return jsonify({data})
+    return jsonify(data)
 
 
 @app.route('/image', methods=['POST'])
