@@ -65,93 +65,107 @@ def get_auth_token():
 @app.route('/analyze/sentence', methods=['POST'])
 @auth.login_required
 def analyze_sentence():
-    user = g.user
-    user.verify_access('/analyze/sentence')
-    sentence = request.json.get('sentence')
-    if sentence is None:
-        abort(400)
-    sentenceAnalyzer = sentiment.SentenceSentimentAnalyzer()
-    sentenceAnalyzer.load()
-    results = sentenceAnalyzer.analyze(sentence)
-    return jsonify({'Positif': round(results[2] * 100, 2),
-                    'Neutre': round(results[1] * 100, 2),
-                    'Negatif': round(results[0] * 100, 2)  })
+    try:
+        user = g.user
+        user.verify_access('/analyze/sentence')
+        sentence = request.json.get('sentence')
+        if sentence is None:
+            abort(400)
+        sentenceAnalyzer = sentiment.SentenceSentimentAnalyzer()
+        sentenceAnalyzer.load()
+        results = sentenceAnalyzer.analyze(sentence)
+        return jsonify({'Positif': round(results[2] * 100, 2),
+                        'Neutre': round(results[1] * 100, 2),
+                        'Negatif': round(results[0] * 100, 2)  })
+    except Exception as e:
+        abort(500, e)
 
 
 @app.route('/analyze/text', methods=['POST'])
 @auth.login_required
 def analyze_text():
-    user = g.user
-    user.verify_access('/analyze/text')
-    text = request.json.get('text')
-    if text is None:
-        abort(400)
-    textAnalyzer = sentiment.TextSentimentAnalyzer()
-    textAnalyzer.load()
-    results = textAnalyzer.analyze(text, verbose=False)
-    return jsonify({'positivity': round(results[2] * 100, 2),
-                    'neutrality': round(results[1] * 100, 2),
-                    'negativity': round(results[0] * 100, 2),
-                    'relevance': round(results[3] * 100, 2),
-                    'slope': round(results[4], 4),
-                    'lerp': round(results[5], 4),
-                    'variance': round(results[6], 4),
-                    'summary': textAnalyzer.summary(results)})
+    try:
+        user = g.user
+        user.verify_access('/analyze/text')
+        text = request.json.get('text')
+        if text is None:
+            abort(400)
+        textAnalyzer = sentiment.TextSentimentAnalyzer()
+        textAnalyzer.load()
+        results = textAnalyzer.analyze(text, verbose=False)
+        return jsonify({'positivity': round(results[2] * 100, 2),
+                        'neutrality': round(results[1] * 100, 2),
+                        'negativity': round(results[0] * 100, 2),
+                        'relevance': round(results[3] * 100, 2),
+                        'slope': round(results[4], 4),
+                        'lerp': round(results[5], 4),
+                        'variance': round(results[6], 4),
+                        'summary': textAnalyzer.summary(results)})
+    except Exception as e:
+        abort(500, e)
 
 
 @app.route('/analyze/customer', methods=['POST'])
 @auth.login_required
 def customer_service_analyzer():
-    user = g.user
-    user.verify_access('/analyze/customer')
-    sentence = request.json.get('sentence')
-    if sentence is None:
-        abort(400)
-    textCS = sentiment.CustomerServiceAnalyzer()
-    textCS.load()
-    results = textCS.analyze(sentence)
-    return jsonify({'Sentiment': round(results[0] * 100, 2),
-                    'Agressivite': round(results[1] * 100, 2),
-                    'Remboursement': round(results[2] * 100, 2) })
+    try:
+        user = g.user
+        user.verify_access('/analyze/customer')
+        sentence = request.json.get('sentence')
+        if sentence is None:
+            abort(400)
+        textCS = sentiment.CustomerServiceAnalyzer()
+        textCS.load()
+        results = textCS.analyze(sentence)
+        return jsonify({'Sentiment': round(results[0] * 100, 2),
+                        'Agressivite': round(results[1] * 100, 2),
+                        'Remboursement': round(results[2] * 100, 2) })
+    except Exception as e:
+        abort(500, e)
 
 
 @app.route('/analyze/dialogue', methods=['GET'])
 @auth.login_required
 def dialogue_analyzer():
-    user = g.user
-    user.verify_access('/analyze/dialogue')
-    dialogueAnalyzer = sentiment.DialogueSentimentAnalyzer()
-    dialogueAnalyzer.load()
-    resultsA, resultsB, estim = dialogueAnalyzer.analyze(dialB, dialA, verbose=False)
-    return jsonify({"Positif A": round(resultsA[2] * 100, 2),
-                    "Neutre A": round(resultsA[1] * 100, 2),
-                    "Negatif A": round(resultsA[0] * 100, 2),
-                    "Pertinence A": round(estim[0] * 100, 2),
-                    "Pente A": round(estim[3], 4),
-                    "Positif B": round(resultsB[2] * 100, 2),
-                    "Neutre B": round(resultsB[1] * 100, 2),
-                    "Negatif B": round(resultsB[0] * 100, 2),
-                    "Pertinence B": round(estim[1] * 100, 2),
-                    "Pente B": round(estim[4], 4),
-                    "Pertinence totale": round(estim[2] * 100, 2)})
+    try:
+        user = g.user
+        user.verify_access('/analyze/dialogue')
+        dialogueAnalyzer = sentiment.DialogueSentimentAnalyzer()
+        dialogueAnalyzer.load()
+        resultsA, resultsB, estim = dialogueAnalyzer.analyze(dialB, dialA, verbose=False)
+        return jsonify({"Positif A": round(resultsA[2] * 100, 2),
+                        "Neutre A": round(resultsA[1] * 100, 2),
+                        "Negatif A": round(resultsA[0] * 100, 2),
+                        "Pertinence A": round(estim[0] * 100, 2),
+                        "Pente A": round(estim[3], 4),
+                        "Positif B": round(resultsB[2] * 100, 2),
+                        "Neutre B": round(resultsB[1] * 100, 2),
+                        "Negatif B": round(resultsB[0] * 100, 2),
+                        "Pertinence B": round(estim[1] * 100, 2),
+                        "Pente B": round(estim[4], 4),
+                        "Pertinence totale": round(estim[2] * 100, 2)})
+    except Exception as e:
+        abort(500, e)
 
 
 @app.route('/analyze/extraction', methods=['POST'])
 @auth.login_required
 def keywords_extraction():
-    user = g.user
-    user.verify_access('/analyze/extraction')
-    text = request.json.get('text')
-    if text is None:
-        abort(400)
-    keywords = extraction.KeywordExtraction()
-    keywords.load()
-    keywords = keywords.extract(text, keywordCount=8, verbose=True)
-    data = []
-    for key in keywords:
-        data.append({"keyword": key[0], "score": round(key[1], 4)})
-    return jsonify({"keywords": data})
-
+    try:
+        user = g.user
+        user.verify_access('/analyze/extraction')
+        text = request.json.get('text')
+        if text is None:
+            abort(400)
+        keywords = extraction.KeywordExtraction()
+        keywords.load()
+        keywords = keywords.extract(text, keywordCount=8, verbose=True)
+        data = []
+        for key in keywords:
+            data.append({"keyword": key[0], "score": round(key[1], 4)})
+        return jsonify({"keywords": data})
+    except Exception as e:
+        abort(500, e)
 
 @app.route('/image', methods=['POST'])
 @auth.login_required
@@ -188,15 +202,8 @@ def image_analyzer():
         return (jsonify({'Error in the image URL': 'Code Error: {}'.format(err.code)}), 400, {})
     except error.URLError as e:
         return (jsonify({'Error': 'There is an error in the image URL'}), 400, {})
-
-
-@app.errorhandler(500)
-def server_error(e):
-    logging.exception('An error occurred during a request.')
-    return """
-    An internal error occurred: <pre>{}</pre>
-    See logs for full stacktrace.
-    """.format(e), 500
+    except Exception as e:
+        abort(500, e)
 
 
 if __name__ == '__main__':
