@@ -89,14 +89,14 @@ def analyze_text():
     textAnalyzer = sentiment.TextSentimentAnalyzer()
     textAnalyzer.load()
     results = textAnalyzer.analyze(text, verbose=False)
-    return jsonify({'Positif': round(results[2] * 100, 2),
-                    'Neutre': round(results[1] * 100, 2),
-                    'Negatif': round(results[0] * 100, 2),
-                    'Pertinence': round(results[3] * 100, 2),
-                    'Pente': round(results[4], 4),
-                    'Lerp': round(results[5], 4),
-                    'Variance': round(results[6], 4),
-                    'Resume': textAnalyzer.summary(results)})
+    return jsonify({'positivity': round(results[2] * 100, 2),
+                    'neutrality': round(results[1] * 100, 2),
+                    'negativity': round(results[0] * 100, 2),
+                    'relevance': round(results[3] * 100, 2),
+                    'slope': round(results[4], 4),
+                    'lerp': round(results[5], 4),
+                    'variance': round(results[6], 4),
+                    'summary': textAnalyzer.summary(results)})
 
 
 @app.route('/analyze/customer', methods=['POST'])
@@ -150,7 +150,7 @@ def keywords_extraction():
     data = {}
     for key in keywords:
         data[key[0]] = round(key[1], 4)
-    return jsonify(data)
+    return jsonify({"keywords": data})
 
 
 @app.route('/image', methods=['POST'])
