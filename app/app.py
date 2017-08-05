@@ -163,9 +163,10 @@ def keywords_extraction():
         data = []
         for key in keywords:
             data.append({"keyword": key[0], "score": round(key[1], 4)})
-        return jsonify({"keywords": data})
+        return jsonify(data)
     except Exception as e:
         abort(500, e)
+
 
 @app.route('/image', methods=['POST'])
 @auth.login_required
