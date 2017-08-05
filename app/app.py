@@ -147,9 +147,9 @@ def keywords_extraction():
     keywords = extraction.KeywordExtraction()
     keywords.load()
     keywords = keywords.extract(text, keywordCount=8, verbose=True)
-    data = {}
+    data = []
     for key in keywords:
-        data[key[0]] = round(key[1], 4)
+        data.push({"keyword": key[0], "score": round(key[1])})
     return jsonify({"keywords": data})
 
 
