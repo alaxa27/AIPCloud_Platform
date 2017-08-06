@@ -62,6 +62,21 @@ def get_auth_token():
     return jsonify({'token': token.decode('ascii'), 'expires-in': "%dh %02dmin %02ds" % (h, m, s)})
 
 
+@app.route('/analyze/word', methods=['POST'])
+@auth.login_required
+def analyze_text():
+    user = g.user
+    user.verify_access('/analyze/word')
+    word = request.json.get('word')
+    if word is None:
+        abort(400)
+    wordAnalyzer = sentiment.WordSentimentAnalyzer()
+    wordAnalyzer.load()
+    results = wordAnalyzer.analyze(word, verbose=False)
+    return jsonify({'positivity': round(results[2] * 100, 2),
+                    'neutrality': round(results[1] * 100, 2),
+                    'negativity': round(results[0] * 100, 2),
+
 @app.route('/analyze/sentence', methods=['POST'])
 @auth.login_required
 def analyze_sentence():
@@ -142,13 +157,20 @@ def keywords_extraction():
     user = g.user
     user.verify_access('/analyze/extraction')
     text = request.json.get('text')
+    sentimentBool = request.json.get('sentiment')
+    volume = request.json.get('volume')
     if text is None:
         abort(400)
+    if volume is None:
+        volume = 8
+
     keywords = extraction.KeywordExtraction()
     keywords.load()
-    keywords = keywords.extract(text, keywordCount=8, verbose=True)
+    keywords = keywords.extract(text, keywordCount=float(volume), verbose=True)
     data = []
     for key in keywords:
+        if  sentimentBool:
+            #Get sentiment from eachword
         data.append({"keyword": key[0], "score": round(key[1], 4)})
     return jsonify(data)
 
