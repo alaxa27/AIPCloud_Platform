@@ -16,6 +16,8 @@ from time import time
 import subprocess
 from urllib import (request as rqst, error)
 
+from instances import get_keywords_instance
+
 CORS(app)
 
 
@@ -31,6 +33,7 @@ def initialization():
         # print("-------------------------->>No database.")
         # InitializeDB(db)
         # The database is already initialized
+
         import nltk
         nltk.download("punkt")
         nltk.download("stopwords")
@@ -110,8 +113,7 @@ def analyze_text():
         text = request.json.get('text')
         if text is None:
             abort(400)
-        textAnalyzer = sentiment.TextSentimentAnalyzer()
-        textAnalyzer.load()
+        textAnalyzer = instances.load_textAnalyzer_instance()
         results = textAnalyzer.analyze(text, verbose=False)
         return jsonify({'positivity': round(results[2] * 100, 2),
                         'neutrality': round(results[1] * 100, 2),
@@ -185,15 +187,15 @@ def keywords_extraction():
             volume = float(volume)
         if sentimentBool:
             sentimentBool = int(sentimentBool)
-        keywords = extraction.KeywordExtraction()
-        keywords.load()
+
+        keywords = instances.load_keywords_instance()
         keywords = keywords.extract(text, keywordCount=volume, verbose=True)
         data = []
         for key in keywords:
             if  sentimentBool:
                 if int(sentimentBool):
                     #callsentiment
-                    
+
                     data.append({"keyword": key[0], "score": round(key[1], 4), "sentiment": {
                         "positivity": 45.7,
                         "neutrality": 39,
