@@ -9,7 +9,7 @@ def load_keywords_instance():
         keywords.load()
     return keywords
 
-def load_keywords_instance():
+def load_textAnalyzer_instance():
     textAnalyzer = getattr(g, '_textAnalyzer', None)
     if textAnalyzer is None:
         textAnalyzer = g._textAnalyzer = sentiment.TextSentimentAnalyzer()
