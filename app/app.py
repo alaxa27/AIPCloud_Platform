@@ -16,7 +16,7 @@ from time import time
 import subprocess
 from urllib import (request as rqst, error)
 
-from instances import get_keywords_instance
+import instances
 
 CORS(app)
 
