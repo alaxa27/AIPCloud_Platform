@@ -7,7 +7,7 @@ from src.authentication import Authentication
 from src.snippets.snippets import dialA, dialB
 from flask import abort, request, jsonify, g, url_for
 from flask_cors import CORS, cross_origin
-#from src.aipcloud.text import sentiment, extraction
+from src.aipcloud.text import sentiment, extraction
 from src.aipcloud.image import classifier, utils
 import cv2
 import numpy as np
@@ -16,7 +16,7 @@ from time import time
 import subprocess
 from urllib import (request as rqst, error)
 
-from instances import load_keywords_instance, load_textAnalyzer_instance
+from instances_aipcloud import load_keywords_instance, load_textAnalyzer_instance
 
 CORS(app)
 
