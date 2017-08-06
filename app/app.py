@@ -16,7 +16,7 @@ from time import time
 import subprocess
 from urllib import (request as rqst, error)
 
-import instances
+from instances import load_keywords_instance, load_textAnalyzer_instance
 
 CORS(app)
 
@@ -113,7 +113,7 @@ def analyze_text():
         text = request.json.get('text')
         if text is None:
             abort(400)
-        textAnalyzer = instances.load_textAnalyzer_instance()
+        textAnalyzer = load_textAnalyzer_instance()
         results = textAnalyzer.analyze(text, verbose=False)
         return jsonify({'positivity': round(results[2] * 100, 2),
                         'neutrality': round(results[1] * 100, 2),
@@ -188,7 +188,7 @@ def keywords_extraction():
         if sentimentBool:
             sentimentBool = int(sentimentBool)
 
-        keywords = instances.load_keywords_instance()
+        keywords = load_keywords_instance()
         keywords = keywords.extract(text, keywordCount=volume, verbose=True)
         data = []
         for key in keywords:
