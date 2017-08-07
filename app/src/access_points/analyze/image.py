@@ -3,7 +3,7 @@ from urllib import (request as rqst, error)
 from flask import abort, jsonify
 import subprocess
 
-def image(url):
+def classify(url):
     if url is None:
         abort(400)
     try:
