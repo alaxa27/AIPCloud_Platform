@@ -16,6 +16,8 @@ from time import time
 import subprocess
 from urllib import (request as rqst, error)
 
+from instances_aipcloud import load_keywords_instance, load_textAnalyzer_instance
+
 CORS(app)
 
 
@@ -31,6 +33,7 @@ def initialization():
         # print("-------------------------->>No database.")
         # InitializeDB(db)
         # The database is already initialized
+
         import nltk
         nltk.download("punkt")
         nltk.download("stopwords")
@@ -62,6 +65,26 @@ def get_auth_token():
     return jsonify({'token': token.decode('ascii'), 'expires-in': "%dh %02dmin %02ds" % (h, m, s)})
 
 
+@app.route('/analyze/word', methods=['POST'])
+@auth.login_required
+def analyze_word():
+    try:
+        user = g.user
+        user.verify_access('/analyze/word')
+        word = request.json.get('word')
+        if word is None:
+            abort(400)
+        wordAnalyzer = sentiment.WordSentimentAnalyzer()
+        wordAnalyzer.load()
+        results = wordAnalyzer.analyze(word, verbose=False)
+        return jsonify({'positivity': round(results[2] * 100, 2),
+                        'neutrality': round(results[1] * 100, 2),
+                        'negativity': round(results[0] * 100, 2),
+                        'relevance': round(results[3] * 100, 2)
+                        })
+    except Exception as e:
+        abort(500, e)
+
 @app.route('/analyze/sentence', methods=['POST'])
 @auth.login_required
 def analyze_sentence():
@@ -90,8 +113,7 @@ def analyze_text():
         text = request.json.get('text')
         if text is None:
             abort(400)
-        textAnalyzer = sentiment.TextSentimentAnalyzer()
-        textAnalyzer.load()
+        textAnalyzer = load_textAnalyzer_instance()
         results = textAnalyzer.analyze(text, verbose=False)
         return jsonify({'positivity': round(results[2] * 100, 2),
                         'neutrality': round(results[1] * 100, 2),
@@ -155,14 +177,37 @@ def keywords_extraction():
         user = g.user
         user.verify_access('/analyze/extraction')
         text = request.json.get('text')
+        sentimentBool = request.json.get('sentiment')
+        volume = request.json.get('volume')
         if text is None:
             abort(400)
-        keywords = extraction.KeywordExtraction()
-        keywords.load()
-        keywords = keywords.extract(text, keywordCount=8, verbose=True)
+        if volume is None:
+            volume = 8
+        else:
+            volume = float(volume)
+        if sentimentBool:
+            sentimentBool = int(sentimentBool)
+
+        keywords = load_keywords_instance()
+        keywords = keywords.extract(text, keywordCount=volume, verbose=True)
         data = []
         for key in keywords:
-            data.append({"keyword": key[0], "score": round(key[1], 4)})
+            if  sentimentBool:
+                if int(sentimentBool):
+                    #callsentiment
+
+                    data.append({"keyword": key[0], "score": round(key[1], 4), "sentiment": {
+                        "positivity": 45.7,
+                        "neutrality": 39,
+                        "negativity": 15.3,
+                        "relevance": 62.6
+
+                    }})
+                    #Get sentiment from eachword
+                    pass
+            else:
+                data.append({"keyword": key[0], "score": round(key[1], 4)})
+
         return jsonify(data)
     except Exception as e:
         abort(500, e)
@@ -208,8 +253,8 @@ def image_analyzer():
 
 
 if __name__ == '__main__':
-    import nltk
-    nltk.download("punkt")
-    nltk.download("stopwords")
-    nltk.download("averaged_perceptron_tagger")
+    # import nltk
+    # nltk.download("punkt")
+    # nltk.download("stopwords")
+    # nltk.download("averaged_perceptron_tagger")
     app.run(host='0.0.0.0', debug=True)
