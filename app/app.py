@@ -1,20 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*
-from src import app, db, auth
+from src import app, auth
 from src.authentication import Authentication
+# from src import db
 # from src.initialize_db import InitializeDB
 from src.snippets.snippets import dialA, dialB
 from flask import abort, request, jsonify, g
 from flask_cors import CORS, cross_origin
 from src.aipcloud.text import sentiment, extraction
 from src.access_points import token
-from src.access_points.analyze import image, sentence, text, dialogue, extraction
-import cv2
-import numpy as np
-import logging
-from time import time
-import subprocess
-from urllib import (request as rqst, error)
+from src.access_points.analyze import image, sentence, text, dialogue, extraction, customer
 
 from instances_aipcloud import load_keywords_instance, load_textAnalyzer_instance
 
@@ -30,10 +25,8 @@ def verify_password(email_or_token, password):
 @app.route('/init')
 def initialization():
     try:
-        # print("-------------------------->>No database.")
         # InitializeDB(db)
         # The database is already initialized
-
         import nltk
         nltk.download("punkt")
         nltk.download("stopwords")
@@ -73,29 +66,17 @@ def analyze_word():
 @app.route('/analyze/sentence', methods=['POST'])
 @auth.login_required
 def analyze_sentence():
-    try:
-        user = g.user
-        user.verify_access('/analyze/sentence')
-        sentence = request.json.get('sentence')
-        if sentence is None:
-            abort(400)
-        sentenceAnalyzer = sentiment.SentenceSentimentAnalyzer()
-        sentenceAnalyzer.load()
-        results = sentenceAnalyzer.analyze(sentence)
-        return jsonify({'Positif': round(results[2] * 100, 2),
-                        'Neutre': round(results[1] * 100, 2),
-                        'Negatif': round(results[0] * 100, 2)  })
-    except Exception as e:
-        abort(500, e)
+    g.user.verify_access('/analyze/sentence')
+    sent = request.json.get('sentence')
+    return sentence.analyzer(sent)
 
 
 @app.route('/analyze/text', methods=['POST'])
 @auth.login_required
 def analyze_text():
+    g.user.verify_access('/analyze/text')
+    text = request.json.get('text')
     try:
-        user = g.user
-        user.verify_access('/analyze/text')
-        text = request.json.get('text')
         if text is None:
             abort(400)
         textAnalyzer = load_textAnalyzer_instance()
@@ -115,44 +96,16 @@ def analyze_text():
 @app.route('/analyze/customer', methods=['POST'])
 @auth.login_required
 def customer_service_analyzer():
-    try:
-        user = g.user
-        user.verify_access('/analyze/customer')
-        sentence = request.json.get('sentence')
-        if sentence is None:
-            abort(400)
-        textCS = sentiment.CustomerServiceAnalyzer()
-        textCS.load()
-        results = textCS.analyze(sentence)
-        return jsonify({'Sentiment': round(results[0] * 100, 2),
-                        'Agressivite': round(results[1] * 100, 2),
-                        'Remboursement': round(results[2] * 100, 2) })
-    except Exception as e:
-        abort(500, e)
+    g.user.verify_access('/analyze/customer')
+    sent = request.json.get('sentence')
+    return customer.analyzer(sent)
 
 
 @app.route('/analyze/dialogue', methods=['GET'])
 @auth.login_required
 def dialogue_analyzer():
-    try:
-        user = g.user
-        user.verify_access('/analyze/dialogue')
-        dialogueAnalyzer = sentiment.DialogueSentimentAnalyzer()
-        dialogueAnalyzer.load()
-        resultsA, resultsB, estim = dialogueAnalyzer.analyze(dialB, dialA, verbose=False)
-        return jsonify({"Positif A": round(resultsA[2] * 100, 2),
-                        "Neutre A": round(resultsA[1] * 100, 2),
-                        "Negatif A": round(resultsA[0] * 100, 2),
-                        "Pertinence A": round(estim[0] * 100, 2),
-                        "Pente A": round(estim[3], 4),
-                        "Positif B": round(resultsB[2] * 100, 2),
-                        "Neutre B": round(resultsB[1] * 100, 2),
-                        "Negatif B": round(resultsB[0] * 100, 2),
-                        "Pertinence B": round(estim[1] * 100, 2),
-                        "Pente B": round(estim[4], 4),
-                        "Pertinence totale": round(estim[2] * 100, 2)})
-    except Exception as e:
-        abort(500, e)
+    g.user.verify_access('/analyze/dialogue')
+    return dialogue.analyzer()
 
 
 @app.route('/analyze/extraction', methods=['POST'])
@@ -201,15 +154,14 @@ def keywords_extraction():
 @app.route('/analyze/image', methods=['POST'])
 @auth.login_required
 def image_analyzer():
-    user = g.user
-    user.verify_access('/analyze/image')
+    g.user.verify_access('/analyze/image')
     url = request.json.get('image-url')
     return image.classify(url)
 
 
 if __name__ == '__main__':
-    # import nltk
-    # nltk.download("punkt")
-    # nltk.download("stopwords")
-    # nltk.download("averaged_perceptron_tagger")
+    import nltk
+    nltk.download("punkt")
+    nltk.download("stopwords")
+    nltk.download("averaged_perceptron_tagger")
     app.run(host='0.0.0.0', debug=True)
