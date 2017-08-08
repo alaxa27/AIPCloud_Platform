@@ -36,7 +36,7 @@ class User(db.Model):
             auths = self.points
             counter = 0
             for element in auths:
-                if element.point_id == point.id and element.timeref >= int(time()) - 86400:
+                if element.point_id == point.id and element.timeref >= int(time()):
                     counter = 1
             if counter == 0:
                 abort(403)

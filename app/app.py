@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*
-from src.models import User
 from src import app, db, auth
 from src.authentication import Authentication
 # from src.initialize_db import InitializeDB
 from src.snippets.snippets import dialA, dialB
-from flask import abort, request, jsonify, g, url_for
+from flask import abort, request, jsonify, g
 from flask_cors import CORS, cross_origin
 from src.aipcloud.text import sentiment, extraction
-from src.aipcloud.image import classifier, utils
+from src.access_points import token
+from src.access_points.analyze import image, sentence, text, dialogue, extraction
 import cv2
 import numpy as np
 import logging
@@ -46,23 +46,8 @@ def initialization():
 @app.route('/token')
 @auth.login_required
 def get_auth_token():
-    auths = g.user.points
-    counter = 0
-    l = []
-    for element in auths:
-        if element.timeref >= int(time()) - 86400:
-            l.append(element.timeref)
-            counter = 1
-    if counter == 0:
-        abort(403)
-    timeref = max(l)
-    expiration = timeref + 86400 - int(time())
-    if expiration <= 0:
-        abort(403)
-    m, s = divmod(expiration, 60)
-    h, m = divmod(m, 60)
-    token = g.user.generate_auth_token(expiration)
-    return jsonify({'token': token.decode('ascii'), 'expires-in': "%dh %02dmin %02ds" % (h, m, s)})
+    user = g.user
+    return token.generate_token(user)
 
 
 @app.route('/analyze/word', methods=['POST'])
@@ -213,43 +198,13 @@ def keywords_extraction():
         abort(500, e)
 
 
-@app.route('/image', methods=['POST'])
+@app.route('/analyze/image', methods=['POST'])
 @auth.login_required
 def image_analyzer():
     user = g.user
-    user.verify_access('/image')
+    user.verify_access('/analyze/image')
     url = request.json.get('image-url')
-    if url is None:
-        abort(400)
-    try:
-        # get the image format
-        response = rqst.urlopen(url)
-        mime = response.info()['Content-type']
-        frmt = mime.split('/')[-1]
-        # download the image
-        if mime.endswith("jpeg"):
-            image_name = 'database/image.jpg'
-        else:
-            image_name = 'database/image.' + frmt
-        args = ['wget', '-O', image_name, url]
-        subprocess.check_call(args)
-        # Call the image analysis model
-        imgClassifier = classifier.MultiLabelClassifier()
-        imgClassifier.load()
-        results = imgClassifier.classify( image_name, nbClasses=1000)
-        data = {}
-        for r in results:
-        	if r[1] > 0.005:
-                    data[r[0]] = round((r[1] * 100),2)
-        # Delete the image after getting the analysis results
-        subprocess.call(['rm', '-f', image_name])
-        return jsonify(data)
-    except error.HTTPError as err:
-        return (jsonify({'Error in the image URL': 'Code Error: {}'.format(err.code)}), 400, {})
-    except error.URLError as e:
-        return (jsonify({'Error': 'There is an error in the image URL'}), 400, {})
-    except Exception as e:
-        abort(500, e)
+    return image.classify(url)
 
 
 if __name__ == '__main__':
