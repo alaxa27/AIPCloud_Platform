@@ -5,7 +5,7 @@ import subprocess
 
 def classify(url):
     if url is None:
-        abort(400)
+        abort(400, 'Make sure you correctly entered image_url in the json format.')
     try:
         # get the image format
         response = rqst.urlopen(url)
