@@ -1,6 +1,4 @@
 from flask import abort, jsonify
-from ...instances_aipcloud import load_keywords_instance
-
 
 
 def extract(text, sentimentBool, volume, keywords):
