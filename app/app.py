@@ -6,7 +6,6 @@ from flask import request, g
 from flask_cors import CORS, cross_origin
 from src.access_points import token, init
 from src.access_points.analyze import image, sentence, text, dialogue, extraction, customer, word
-from src.aipcloud.text import sentiment
 
 CORS(app)
 
@@ -14,6 +13,7 @@ sentenceAnalyzer = None
 textAnalyzer = None
 dialogueAnalyzer = None
 textCS = None
+keywords = None
 
 
 @auth.verify_password
@@ -24,8 +24,8 @@ def verify_password(email_or_token, password):
 
 @app.before_first_request
 def initialization():
-    global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS
-    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS = init.initialize()
+    global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords
+    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords = init.initialize()
 
 
 @app.route('/token')
@@ -48,7 +48,6 @@ def analyze_word():
 def analyze_sentence():
     g.user.verify_access('/analyze/sentence')
     sent = request.json.get('sentence')
-    global sentenceAnalyzer
     return sentence.analyzer(sent, sentenceAnalyzer)
 
 
@@ -57,7 +56,6 @@ def analyze_sentence():
 def analyze_text():
     g.user.verify_access('/analyze/text')
     t = request.json.get('text')
-    global textAnalyzer
     return text.analyzer(t, textAnalyzer)
 
 
@@ -66,7 +64,6 @@ def analyze_text():
 def customer_service_analyzer():
     g.user.verify_access('/analyze/customer')
     sent = request.json.get('sentence')
-    global textCS
     return customer.analyzer(sent, textCS)
 
 
@@ -74,7 +71,6 @@ def customer_service_analyzer():
 @auth.login_required
 def dialogue_analyzer():
     g.user.verify_access('/analyze/dialogue')
-    global dialogueAnalyzer
     return dialogue.analyzer(dialogueAnalyzer)
 
 
@@ -85,7 +81,7 @@ def keywords_extraction():
     txt = request.json.get('text')
     sentimentBool = request.json.get('sentiment')
     volume = request.json.get('volume')
-    return extraction.extract(txt, sentimentBool, volume)
+    return extraction.extract(txt, sentimentBool, volume, keywords)
 
 
 @app.route('/analyze/image', methods=['POST'])

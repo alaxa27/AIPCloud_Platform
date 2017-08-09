@@ -1,5 +1,5 @@
 from flask import abort, g
-from ..aipcloud.text import sentiment
+from ..aipcloud.text import sentiment, extraction
 # from . import db
 # from .initialize_db import InitializeDB
 
@@ -18,4 +18,6 @@ def initialize():
     dialogueAnalyzer.load()
     textCS = sentiment.CustomerServiceAnalyzer()
     textCS.load()
-    return sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS
+    keywords = extraction.KeywordExtraction()
+    keywords.load()
+    return sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords

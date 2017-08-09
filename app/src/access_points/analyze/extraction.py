@@ -3,7 +3,7 @@ from ...instances_aipcloud import load_keywords_instance
 
 
 
-def extract(text, sentimentBool, volume):
+def extract(text, sentimentBool, volume, keywords):
     try:
         if text is None:
             abort(400)
@@ -14,7 +14,6 @@ def extract(text, sentimentBool, volume):
         if sentimentBool:
             sentimentBool = int(sentimentBool)
 
-        keywords = load_keywords_instance()
         keywords = keywords.extract(text, keywordCount=volume, verbose=True)
         data = []
         for key in keywords:
