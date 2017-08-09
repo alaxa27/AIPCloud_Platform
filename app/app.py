@@ -2,16 +2,18 @@
 # -*- coding: utf-8 -*
 from src import app, auth
 from src.authentication import Authentication
-# from src import db
-# from src.initialize_db import InitializeDB
-from src.snippets.snippets import dialA, dialB
 from flask import request, g
 from flask_cors import CORS, cross_origin
 from src.access_points import token, init
 from src.access_points.analyze import image, sentence, text, dialogue, extraction, customer, word
-
+from src.aipcloud.text import sentiment
 
 CORS(app)
+
+sentenceAnalyzer = None
+textAnalyzer = None
+dialogueAnalyzer = None
+textCS = None
 
 
 @auth.verify_password
@@ -20,9 +22,10 @@ def verify_password(email_or_token, password):
     return authenticate.verify_password(email_or_token, password)
 
 
-@app.route('/init')
+@app.before_first_request
 def initialization():
-    return init.initialize()
+    global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS
+    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS = init.initialize()
 
 
 @app.route('/token')
@@ -45,7 +48,8 @@ def analyze_word():
 def analyze_sentence():
     g.user.verify_access('/analyze/sentence')
     sent = request.json.get('sentence')
-    return sentence.analyzer(sent)
+    global sentenceAnalyzer
+    return sentence.analyzer(sent, sentenceAnalyzer)
 
 
 @app.route('/analyze/text', methods=['POST'])
@@ -53,7 +57,8 @@ def analyze_sentence():
 def analyze_text():
     g.user.verify_access('/analyze/text')
     t = request.json.get('text')
-    return text.analyzer(t)
+    global textAnalyzer
+    return text.analyzer(t, textAnalyzer)
 
 
 @app.route('/analyze/customer', methods=['POST'])
@@ -61,14 +66,16 @@ def analyze_text():
 def customer_service_analyzer():
     g.user.verify_access('/analyze/customer')
     sent = request.json.get('sentence')
-    return customer.analyzer(sent)
+    global textCS
+    return customer.analyzer(sent, textCS)
 
 
 @app.route('/analyze/dialogue', methods=['GET'])
 @auth.login_required
 def dialogue_analyzer():
     g.user.verify_access('/analyze/dialogue')
-    return dialogue.analyzer()
+    global dialogueAnalyzer
+    return dialogue.analyzer(dialogueAnalyzer)
 
 
 @app.route('/analyze/extraction', methods=['POST'])
@@ -90,8 +97,4 @@ def image_analyzer():
 
 
 if __name__ == '__main__':
-    # import nltk
-    # nltk.download("punkt")
-    # nltk.download("stopwords")
-    # nltk.download("averaged_perceptron_tagger")
     app.run(host='0.0.0.0', debug=True)

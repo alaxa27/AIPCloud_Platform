@@ -1,11 +1,9 @@
-from ...instances_aipcloud import load_textAnalyzer_instance
 from flask import abort, jsonify
 
-def analyzer(text):
+def analyzer(text, textAnalyzer):
     if text is None:
         abort(400)
     try:
-        textAnalyzer = load_textAnalyzer_instance()
         results = textAnalyzer.analyze(text, verbose=False)
         return jsonify({'positivity': round(results[2] * 100, 2),
                         'neutrality': round(results[1] * 100, 2),

@@ -1,10 +1,8 @@
-from ...aipcloud.text.sentiment import DialogueSentimentAnalyzer
 from flask import abort, jsonify
+from ...snippets.snippets import dialA, dialB
 
-def analyzer():
+def analyzer(dialogueAnalyzer):
     try:
-        dialogueAnalyzer = DialogueSentimentAnalyzer()
-        dialogueAnalyzer.load()
         resultsA, resultsB, estim = dialogueAnalyzer.analyze(dialB, dialA, verbose=False)
         return jsonify({"Positif A": round(resultsA[2] * 100, 2),
                         "Neutre A": round(resultsA[1] * 100, 2),
