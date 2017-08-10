@@ -21,7 +21,7 @@ from keras.preprocessing import sequence
 from keras.models import model_from_json
 import matplotlib.pyplot as plt
 
-import .word2vec
+from .word2vec import *
 from ..statistics import regression
 
 from ..exceptions import UnloadedException
@@ -42,7 +42,7 @@ class SentenceSentimentAnalyzer:
 		json_file.close()
 		self.model = model_from_json(loaded_model_json)
 		self.model.load_weights(os.path.join(os.path.dirname(__file__), "../data/FR_LSTM_weights.h5"))
-		self.W2V = word2vec.load(os.path.join(os.path.dirname(__file__), "../data/FR.vocab"))
+		self.W2V = load(os.path.join(os.path.dirname(__file__), "../data/FR.vocab"))
 		print("Sentiment model succesfully loaded.")
 		self.loaded = True
 
@@ -300,7 +300,7 @@ class CustomerServiceAnalyzer:
 		self.refundAnalyzer = model_from_json(loaded_model_json)
 		self.refundAnalyzer.load_weights(os.path.join(os.path.dirname(__file__), "../data/FR_LSTM_CS_Refund_weights.h5"))
 
-		self.W2V = word2vec.load(os.path.join(os.path.dirname(__file__), "../data/FR_CustomService.vocab"))
+		self.W2V = load(os.path.join(os.path.dirname(__file__), "../data/FR_CustomService.vocab"))
 		self.sentimentAnalyzer.load()
 		print("Customer service analyzer succesfully loaded.")
 		self.loaded = True
