@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*
 from src import app, auth
 from src.authentication import Authentication
-from flask import request, g
+from flask import request, g, abort
 from flask_cors import CORS, cross_origin
-from src.access_points import token, init
+from src.access_points import token, init, grantaccess
 from src.access_points.analyze import image, sentence, text, dialogue, extraction, customer, word
 
 CORS(app)
@@ -35,6 +35,17 @@ def get_auth_token():
     return token.generate_token(user)
 
 
+@app.route('/grantaccess', methods=['POST'])
+@auth.login_required
+def grant_access():
+    if not g.user.admin:
+        abort(403, 'You are not an admin! Please contact Benjamin Dallard.')
+    else:
+        email = request.json.get('email')
+        route = request.json.get('route')
+    return grantaccess.grant(email, route)
+
+
 @app.route('/analyze/word', methods=['POST'])
 @auth.login_required
 def analyze_word():
@@ -63,8 +74,8 @@ def analyze_text():
 @auth.login_required
 def customer_service_analyzer():
     g.user.verify_access('/analyze/customer')
-    sent = request.json.get('sentence')
-    return customer.analyzer(sent, textCS)
+    txt = request.json.get('text')
+    return customer.analyzer(txt, textCS)
 
 
 @app.route('/analyze/dialogue', methods=['GET'])
