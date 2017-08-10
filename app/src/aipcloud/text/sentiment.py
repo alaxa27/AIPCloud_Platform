@@ -21,8 +21,8 @@ from keras.preprocessing import sequence
 from keras.models import model_from_json
 import matplotlib.pyplot as plt
 
-from aipcloud.text import word2vec
-from aipcloud.statistics import regression
+import word2vec
+from ..statistics import regression
 
 from ..exceptions import UnloadedException
 
@@ -34,7 +34,7 @@ class SentenceSentimentAnalyzer:
 	def __init__(self):
 		self.loaded = False
 		self.model = None
-	
+
 	def load(self):
 		print("Loading sentiment model.")
 		json_file = open(os.path.join(os.path.dirname(__file__), "../data/FR_LSTM_model.json"), 'r')
@@ -49,11 +49,11 @@ class SentenceSentimentAnalyzer:
 	def analyze(self, text):
 		if not(self.loaded):
 			raise UnloadedException()
-		
+
 		text = text.lower()
 		# We transform our sentence into word tokens
 		tokens = nltk.word_tokenize(text)
-		
+
 		# Our input is a MAX_LENGTH integer vector
 		vector = np.repeat(0, self.MAX_LENGTH)
 		for i in range(min(self.MAX_LENGTH, len(tokens))):
@@ -74,7 +74,7 @@ class TextSentimentAnalyzer:
 	def __init__(self):
 		self.loaded = False
 		self.analyzer = SentenceSentimentAnalyzer()
-	
+
 	def load(self):
 		self.analyzer.load()
 		self.loaded = True
@@ -84,7 +84,7 @@ class TextSentimentAnalyzer:
 			raise UnloadedException()
 
 		eltime = time.time()
-		
+
 		text = text.lower()
 		lines = re.split(r"[.;!?]+", text)
 
@@ -116,7 +116,7 @@ class TextSentimentAnalyzer:
 		accuracy = accuracy**(1/3)
 		mainLerp = distrib[2] - distrib[0]
 		variance = sum([abs(lerp[i+1] - lerp[i]) for i in range(N - 1)]) / (N - 1)
-		
+
 		regModel = regression.SimpleLinearRegressionModel()
 		regModel.fit(range(N), lerp)
 		slope = regModel.parameters()[1] * N
@@ -124,7 +124,7 @@ class TextSentimentAnalyzer:
 		if verbose:
 			eltime = time.time() - eltime
 			print("Time to analyze : {:6.5f} second(s).".format(eltime))
-			
+
 			plt.plot(range(N), neg, color="r")
 			plt.plot(range(N), mid, color="b")
 			plt.plot(range(N), pos, color="g")
@@ -144,7 +144,7 @@ class TextSentimentAnalyzer:
 		accuracy = inputVector[3]
 		slope = inputVector[4]
 
-		frenchClasses = [ "négatif", "neutre", "positif" ]	
+		frenchClasses = [ "négatif", "neutre", "positif" ]
 
 		summary = "Le texte est "
 		if accuracy >= 0.75:
@@ -222,7 +222,7 @@ class DialogueSentimentAnalyzer:
 		weightsB = []
 		lerpA = []
 		lerpB = []
-		
+
 		for i in range(N):
 			if i < Na:
 				anA = self.analyzer.analyze(listA[i])
@@ -270,7 +270,7 @@ class DialogueSentimentAnalyzer:
 			eltime = time.time() - eltime
 			print("Time to analyze : {:6.5f} second(s).".format(eltime))
 
-		return distribA, distribB, estimators	
+		return distribA, distribB, estimators
 
 class CustomerServiceAnalyzer:
 
@@ -314,7 +314,7 @@ class CustomerServiceAnalyzer:
 		text = text.lower()
 		# We transform our sentence into word tokens
 		tokens = nltk.word_tokenize(text)
-		
+
 		# Our input is a MAX_LENGTH integer vector
 		vector = np.repeat(0, self.MAX_LENGTH)
 		for i in range(min(self.MAX_LENGTH, len(tokens))):
@@ -328,4 +328,3 @@ class CustomerServiceAnalyzer:
 		agress = self.agressAnalyzer.predict(np.asarray([vector]))[0][0]
 		refund = self.refundAnalyzer.predict(np.asarray([vector]))[0][0]
 		return [ satisf, agress, refund ]
-		
