@@ -21,7 +21,7 @@ from keras.preprocessing import sequence
 from keras.models import model_from_json
 import matplotlib.pyplot as plt
 
-import word2vec
+import .word2vec
 from ..statistics import regression
 
 from ..exceptions import UnloadedException
