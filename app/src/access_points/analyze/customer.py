@@ -1,10 +1,10 @@
 from flask import abort, jsonify
 
-def analyzer(sentence, textCS):
-    if sentence is None:
+def analyzer(text, textCS):
+    if text is None:
         abort(400)
     try:
-        results = textCS.analyze(sentence)
+        results = textCS.analyze(text)
         return jsonify({'Sentiment': round(results[0] * 100, 2),
                         'Agressivite': round(results[1] * 100, 2),
                         'Remboursement': round(results[2] * 100, 2) })
