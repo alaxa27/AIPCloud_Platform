@@ -12,9 +12,9 @@ class CustomerServiceAnalyzer:
 	MAX_LENGTH = 24
 	TOP_WORDS = 50000
 
-	def __init__(self):
+	def __init__(self, sentimentAnalyzer=None):
 		self.loaded = False
-		self.sentimentAnalyzer = TextSentimentAnalyzer()
+		self.sentimentAnalyzer = sentimentAnalyzer
 		self.agressAnalyzer = None
 		self.refundAnalyzer = None
 
@@ -36,7 +36,9 @@ class CustomerServiceAnalyzer:
 		self.refundAnalyzer.load_weights(os.path.join(os.path.dirname(__file__), "../../data/FR_LSTM_CS_Refund_weights.h5"))
 
 		self.W2V = load(os.path.join(os.path.dirname(__file__), "../../data/FR_CustomService.vocab"))
-		self.sentimentAnalyzer.load()
+		if self.sentimentAnalyzer is None:
+			self.sentimentAnalyzer = SentenceSentimentAnalyzer()
+			self.sentimentAnalyzer.load()
 		print("Customer service analyzer succesfully loaded.")
 		self.loaded = True
 
