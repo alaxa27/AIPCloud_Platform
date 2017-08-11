@@ -14,7 +14,7 @@ def initialize():
     sentenceAnalyzer.load()
     textAnalyzer = sentiment.TextSentimentAnalyzer(analyzer=sentenceAnalyzer)
     textAnalyzer.load()
-    dialogueAnalyzer = sentiment.DialogueSentimentAnalyzer()
+    dialogueAnalyzer = sentiment.DialogueSentimentAnalyzer(sentimentAnalyzer=sentenceAnalyzer)
     dialogueAnalyzer.load()
     textCS = sentiment.CustomerServiceAnalyzer()
     textCS.load()
