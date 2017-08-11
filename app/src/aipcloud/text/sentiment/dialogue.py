@@ -1,5 +1,6 @@
 import time
 
+from .sentence import SentenceSentimentAnalyzer
 from ...statistics import regression
 from ...exceptions import UnloadedException
 
