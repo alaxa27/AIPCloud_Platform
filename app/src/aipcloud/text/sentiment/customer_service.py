@@ -4,6 +4,7 @@ import nltk
 from keras.models import model_from_json
 
 from .text import TextSentimentAnalyzer
+from ..word2vec import *
 from ...exceptions import UnloadedException
 
 class CustomerServiceAnalyzer:
