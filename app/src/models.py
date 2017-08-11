@@ -18,14 +18,17 @@ class User(db.Model):
         with db.session.no_autoflush:
             return Authorization.query.filter_by(user_id = self.id, point_id = point.id).first()
 
-    def grant_access_to(self, point):
+    def grant_access_to(self, point, timeref):
         auth = self.authorization_exists(point)
+        if timeref is None:
+            timeref = int(time()) + 86400
+        timeref = int(timeref)
         if auth:
-            auth.timeref = int(time()) + 86400
+            auth.timeref = timeref
             db.session.commit()
             return True
         else:
-            auth = Authorization(timeref = int(time()) + 86400)
+            auth = Authorization(timeref = timeref)
             auth.point = point
             self.points.append(auth)
             db.session.commit()

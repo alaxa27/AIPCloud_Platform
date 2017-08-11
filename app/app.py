@@ -43,7 +43,8 @@ def grant_access():
     else:
         email = request.json.get('email')
         route = request.json.get('route')
-    return grantaccess.grant(email, route)
+        timeref = request.json.get('timeref')
+    return grantaccess.grant(email, route, timeref)
 
 
 @app.route('/analyze/word', methods=['POST'])
