@@ -8,10 +8,10 @@ from keras import applications
 from keras.applications.imagenet_utils import decode_predictions
 from keras.applications.imagenet_utils import preprocess_input
 
-from src.aipcloud.image import utils
+from aipcloud.image import utils
 from ..exceptions import UnloadedException
 
-class ImageClassifier(object):
+class ImageClassifier:
 
 	def __init__(self):
 		self.name = ""

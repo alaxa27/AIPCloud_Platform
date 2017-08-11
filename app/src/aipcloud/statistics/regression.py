@@ -198,7 +198,7 @@ class KernelRidgeRegressionModel(Model):
 		p = len(X[0])
 		self.Xtrain = np.array(X)
 		self.alpha = alpha
-		self.Ytrain = np.array(Y)
+		self.Ytrain = np.array(Y)	
 		self.kernelMat = np.array([[self.kernelFun(xi,xj) for xj in self.Xtrain] for xi in self.Xtrain])
 
 		# Estimators of parameters
@@ -219,7 +219,7 @@ class KernelRidgeRegressionModel(Model):
 		Kern = np.array([[self.kernelFun(xi,xj) for xj in self.Xtrain] for xi in X])
 		inv = np.linalg.pinv(self.kernelMat + self.alpha * np.identity(len(self.kernelMat)))
 		right = np.dot(inv, self.Ytrain)
-		return np.dot(Kern, right)
+		return np.dot(Kern, right) 
 
 	def parameters(self):
 		super(KernelRidgeRegressionModel, self).isfit()
@@ -365,3 +365,4 @@ class GaussianProcessRegressionModel(Model):
 
 	def predict(self, X):
 		return self.model.predict(X)
+	
