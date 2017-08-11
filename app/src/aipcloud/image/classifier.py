@@ -8,10 +8,10 @@ from keras import applications
 from keras.applications.imagenet_utils import decode_predictions
 from keras.applications.imagenet_utils import preprocess_input
 
-from src.aipcloud.image import utils
+from .utils import *
 from ..exceptions import UnloadedException
 
-class ImageClassifier(object):
+class ImageClassifier:
 
 	def __init__(self):
 		self.name = ""
@@ -38,7 +38,7 @@ class MultiLabelClassifier(ImageClassifier):
 		nbClasses = min(nbClasses, 1000)
 		super(MultiLabelClassifier, self).isloaded()
 		if type(inputImage) == str:
-			image = utils.ImageNetToArray(inputImage, targetSize=self.targetSize)
+			image = ImageNetToArray(inputImage, targetSize=self.targetSize)
 		else:
 			image = inputImage
 		preds = self.model.predict(image)
