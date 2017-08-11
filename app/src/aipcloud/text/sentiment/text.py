@@ -1,6 +1,7 @@
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+import re
 
 from .sentence import SentenceSentimentAnalyzer
 from ...statistics import regression
