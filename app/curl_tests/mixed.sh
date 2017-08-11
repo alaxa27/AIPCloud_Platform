@@ -14,7 +14,7 @@ curl -u text@jdc.fr:jdc -i -X GET http://0.0.0.0:80/analyze/dialogue
 
 echo '================= 4 ==================='
 
-curl -u text@jdc.fr:jdc -i -X POST -H "Content-Type: application/json" -d '{"sentence":"Votre service est très mauvais, aucune écoute, aucune considération. Bref, encore un SAV bien inutile."}' http://0.0.0.0:80/analyze/customer
+curl -u text@jdc.fr:jdc -i -X POST -H "Content-Type: application/json" -d '{"text":"Votre service est très mauvais, aucune écoute, aucune considération. Bref, encore un SAV bien inutile."}' http://0.0.0.0:80/analyze/customer
 
 echo '================= 5 ==================='
 
@@ -34,7 +34,7 @@ curl -u text@jdc.fr:jdc -i -X POST -H "Content-Type: application/json" -d '{"sen
 
 echo '================= 9 ==================='
 
-curl -u text@jdc.fr:jdc -i -X POST -H "Content-Type: application/json" -d '{"sentence":"Votre service est très mauvais, aucune écoute, aucune considération. Bref, encore un SAV bien inutile."}' http://0.0.0.0:80/analyze/customer
+curl -u text@jdc.fr:jdc -i -X POST -H "Content-Type: application/json" -d '{"text":"Votre service est très mauvais, aucune écoute, aucune considération. Bref, encore un SAV bien inutile."}' http://0.0.0.0:80/analyze/customer
 
 echo '================= 10 ==================='
 
