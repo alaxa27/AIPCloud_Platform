@@ -12,7 +12,7 @@ def initialize():
     nltk.download("averaged_perceptron_tagger")
     sentenceAnalyzer = sentiment.SentenceSentimentAnalyzer()
     sentenceAnalyzer.load()
-    textAnalyzer = sentiment.TextSentimentAnalyzer()
+    textAnalyzer = sentiment.TextSentimentAnalyzer(analyzer=sentenceAnalyzer)
     textAnalyzer.load()
     dialogueAnalyzer = sentiment.DialogueSentimentAnalyzer()
     dialogueAnalyzer.load()

@@ -11,12 +11,14 @@ class TextSentimentAnalyzer:
 
 	TOP_WORDS = 40000
 
-	def __init__(self):
+	def __init__(self, analyzer=None):
 		self.loaded = False
-		self.analyzer = SentenceSentimentAnalyzer()
+		self.analyzer =	analyzer
 
 	def load(self):
-		self.analyzer.load()
+		if self.analyzer is None:
+			self.analyzer = SentenceSentimentAnalyzer()
+			self.analyzer.load()
 		self.loaded = True
 
 	def analyze(self, text, verbose=False):
