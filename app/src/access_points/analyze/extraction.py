@@ -20,9 +20,9 @@ def extract(text, sentimentBool, volume, keywords):
                     #callsentiment
 
                     data.append({"keyword": key[0], "score": round(key[1], 4), "sentiment": {
-                        "positivity": 45.7,
-                        "neutrality": 39,
-                        "negativity": 15.3,
+                        "positivity": 0,
+                        "neutrality": 100,
+                        "negativity": 0,
                         "relevance": 62.6
 
                     }})
