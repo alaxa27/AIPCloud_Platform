@@ -10,7 +10,7 @@ def analyzer(sentence, sentenceAnalyzer):
         data = {'positif': round(results[2] * 100, 2),
                 'neutre': round(results[1] * 100, 2),
                 'negatif': round(results[0] * 100, 2)}
-        g.user.save_query('/analyze/sentence', data)
+        g.user.save_query('/analyze/sentence', data, results['exec_time'])
         return jsonify(data)
     except Exception as e:
         abort(500, e)

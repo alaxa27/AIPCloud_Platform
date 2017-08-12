@@ -14,7 +14,7 @@ def analyzer(text, textAnalyzer):
                 'lerp': round(results[5], 4),
                 'variance': round(results[6], 4),
                 'summary': textAnalyzer.summary(results) }
-        g.user.save_query('/analyze/text', data)
+        g.user.save_query('/analyze/text', data, analysis['exec_time'])
         return jsonify(data)
     except Exception as e:
         abort(500, e)
