@@ -1,5 +1,5 @@
 from flask import abort, jsonify, g
-from ...models import Query
+
 
 def analyzer(sentence, sentenceAnalyzer):
     if sentence is None:
