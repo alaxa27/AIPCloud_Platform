@@ -1,4 +1,4 @@
-from flask import abort, jsonify
+from flask import abort, jsonify, g
 
 
 def extract(text, sentimentBool, volume, keywords):
@@ -30,7 +30,7 @@ def extract(text, sentimentBool, volume, keywords):
                     pass
             else:
                 data.append({"keyword": key[0], "score": round(key[1], 4)})
-
+        g.user.save_query('/analyze/extraction', data)
         return jsonify(data)
     except Exception as e:
         abort(500, e)

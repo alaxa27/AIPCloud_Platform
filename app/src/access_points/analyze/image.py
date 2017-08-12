@@ -1,6 +1,6 @@
 from ...aipcloud.image import classifier, utils
 from urllib import (request as rqst, error)
-from flask import abort, jsonify
+from flask import abort, jsonify, g
 import subprocess
 
 def classify(url):
@@ -28,6 +28,7 @@ def classify(url):
                     data[r[0]] = round((r[1] * 100),2)
         # Delete the image after getting the analysis results
         subprocess.call(['rm', '-f', image_name])
+        g.user.save_query('/analyze/image', data)
         return jsonify(data)
     except error.HTTPError as err:
         return (jsonify({'Error in the image URL': 'Code Error: {}'.format(err.code)}), 400, {})

@@ -1,12 +1,15 @@
-from flask import abort, jsonify
+from flask import abort, jsonify, g
+from ...models import Query
 
 def analyzer(sentence, sentenceAnalyzer):
     if sentence is None:
         abort(400)
     try:
         results = sentenceAnalyzer.analyze(sentence)
-        return jsonify({'Positif': round(results[2] * 100, 2),
-                        'Neutre': round(results[1] * 100, 2),
-                        'Negatif': round(results[0] * 100, 2)  })
+        data = {'positif': round(results[2] * 100, 2),
+                'neutre': round(results[1] * 100, 2),
+                'negatif': round(results[0] * 100, 2)}
+        g.user.save_query('/analyze/sentence', data)
+        return jsonify(data)
     except Exception as e:
         abort(500, e)

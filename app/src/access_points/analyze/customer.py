@@ -1,12 +1,14 @@
-from flask import abort, jsonify
+from flask import abort, jsonify, g
 
 def analyzer(text, textCS):
     if text is None:
         abort(400)
     try:
         results = textCS.analyze(text)
-        return jsonify({'Sentiment': round(results[0] * 100, 2),
-                        'Agressivite': round(results[1] * 100, 2),
-                        'Remboursement': round(results[2] * 100, 2) })
+        data = {'sentiment': round(results[0] * 100, 2),
+                'agressivite': round(results[1] * 100, 2),
+                'remboursement': round(results[2] * 100, 2) }
+        g.user.save_query('/analyze/customer', data)
+        return jsonify(data)
     except Exception as e:
         abort(500, e)

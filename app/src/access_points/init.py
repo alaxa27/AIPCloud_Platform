@@ -1,7 +1,7 @@
 from flask import abort, g
 from ..aipcloud.text import sentiment, extraction
-# from . import db
-# from .initialize_db import InitializeDB
+# from .. import db
+# from ..initialize_db import InitializeDB
 
 def initialize():
     # InitializeDB(db)
