@@ -10,13 +10,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CLOUDSQL_USER = 'root'
 CLOUDSQL_PASSWORD = 'juniordataconsulting17'
 CLOUDSQL_DATABASE = 'aipcloud'
-CLOUDSQL_CONNECTION_NAME = 'jdccloud-173513:europe-west1:jdccloud-sql'
+CLOUDSQL_CONNECTION_NAME = 'jdccloud-173513:europe-west1:aipcloud-sql'
 # instance.
 app.config['CLOUDSQL_USER'] = CLOUDSQL_USER
 app.config['CLOUDSQL_PASSWORD'] = CLOUDSQL_PASSWORD
 app.config['CLOUDSQL_DATABASE'] = CLOUDSQL_DATABASE
 #   "project:region:cloudsql-instance".
-app.config['CLOUDSQL_CONNECTION_NAME'] = 'jdccloud-173513:europe-west1:jdccloud-sql'
+app.config['CLOUDSQL_CONNECTION_NAME'] = 'jdccloud-173513:europe-west1:aipcloud-sql'
 
 # The CloudSQL proxy is used locally to connect to the cloudsql instance.
 # To start the proxy, use:
@@ -26,7 +26,7 @@ app.config['CLOUDSQL_CONNECTION_NAME'] = 'jdccloud-173513:europe-west1:jdccloud-
 # Port 3306 is the standard MySQL port. If you need to use a different port,
 # change the 3306 to a different port number.
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'mysql+pymysql://{user}:{password}@35.189.230.108/{database}'
+    'mysql+pymysql://{user}:{password}@35.187.165.126/{database}'
     '?unix_socket=/cloudsql/{connection_name}').format(
         user=CLOUDSQL_USER, password=CLOUDSQL_PASSWORD,
 database=CLOUDSQL_DATABASE, connection_name=CLOUDSQL_CONNECTION_NAME)
