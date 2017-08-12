@@ -56,8 +56,6 @@ class User(db.Model):
                 if element.point_id == point.id and element.timeref >= int(time()):
                     counter = 1
             if counter == 0:
-                # db.session.add(Query(user_id=self.id, point_id=point.id, request=request.get_json(), response_code=403))
-                # db.session.commit()
                 abort(403)
 
     def save_query(self, path, data):
