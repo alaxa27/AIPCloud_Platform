@@ -37,7 +37,7 @@ class TextSentimentAnalyzer:
 		for line in lines:
 			if len(line) > 3:
 				results = self.analyzer.analyze(line)
-				an = results['res']
+				an = results.res
 				w = abs(an[2] - an[0]) + abs(an[1] - an[0]) + abs(an[2] - an[1])
 				w /= 3
 				classes.append(an)
@@ -55,8 +55,8 @@ class TextSentimentAnalyzer:
 
 		sumWeight = sum(weights)
 		distrib = [ sum(neg) / sumWeight, sum(mid) / sumWeight, sum(pos) / sumWeight ]
-		accuracy = abs(distrib[0] - distrib[1]) + abs(distrib[2] - distrib[1])
-		accuracy = accuracy**(1/3)
+		accuracy = (abs(distrib[0] - distrib[1]) + abs(distrib[2] - distrib[1])) / 2.0
+		accuracy = accuracy**(1/5)
 		mainLerp = distrib[2] - distrib[0]
 		variance = sum([abs(lerp[i+1] - lerp[i]) for i in range(N - 1)]) / (N - 1)
 
