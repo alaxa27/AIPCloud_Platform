@@ -5,7 +5,7 @@ def analyzer(text, textCS):
         abort(400)
     try:
         analysis = textCS.analyze(text)
-        results = analysis.res
+        results = analysis['res']
         data = {'sentiment': round(results[0] * 100, 2),
                 'agressivite': round(results[1] * 100, 2),
                 'remboursement': round(results[2] * 100, 2) }

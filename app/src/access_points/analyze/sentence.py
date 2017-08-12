@@ -6,7 +6,7 @@ def analyzer(sentence, sentenceAnalyzer):
         abort(400)
     try:
         analysis = sentenceAnalyzer.analyze(sentence)
-        results = analysis.res
+        results = analysis['res']
         data = {'positif': round(results[2] * 100, 2),
                 'neutre': round(results[1] * 100, 2),
                 'negatif': round(results[0] * 100, 2)}
