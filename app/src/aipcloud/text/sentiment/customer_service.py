@@ -67,4 +67,4 @@ class CustomerServiceAnalyzer:
 		agress = self.agressAnalyzer.predict(np.asarray([vector]))[0][0]
 		refund = self.refundAnalyzer.predict(np.asarray([vector]))[0][0]
 		execTime = time.time() - execTime
-		return {'res': [ satisf, agress, refund ], 'exec_time': execTime)
+		return {'res': [ satisf, agress, refund ], 'exec_time': execTime}

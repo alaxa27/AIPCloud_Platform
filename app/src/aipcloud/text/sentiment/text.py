@@ -80,7 +80,7 @@ class TextSentimentAnalyzer:
 		results = [ accuracy, slope, mainLerp, variance ]
 		results = np.hstack((distrib, results))
 		execTime = time.time() - execTime
-		return (results, execTime)
+		return {'res': results, 'exec_time': execTime}
 
 	def summary(self, inputVector):
 		distrib = inputVector[0:3]
