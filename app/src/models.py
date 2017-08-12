@@ -59,14 +59,13 @@ class User(db.Model):
                 abort(403)
 
     def save_query(self, path, data, exectime):
-        if not self.admin:
-            point = AccessPoint.query.filter_by(path=path).first()
-            db.session.add(Query(user_id=self.id,
-                                 point_id=point.id,
-                                 request=str(request.json),
-                                 response=str(data),
-                                 exec_time = exectime))
-            db.session.commit()
+        point = AccessPoint.query.filter_by(path=path).first()
+        db.session.add(Query(user_id=self.id,
+                             point_id=point.id,
+                             request=str(request.json),
+                             response=str(data),
+                             exec_time = exectime))
+        db.session.commit()
 
     @staticmethod
     def verify_auth_token(token):
@@ -102,6 +101,6 @@ class Query(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     point_id = db.Column(db.Integer, db.ForeignKey('access_points.id'))
     timestamp = db.Column(db.Integer, default = int(time()))
-    exec_time = db.Column(db.Integer)
-    request = db.Column(db.String(50000))
-    response = db.Column(db.String(50000))
+    exec_time = db.Column(db.Float)
+    request = db.Column(db.String(10000))
+    response = db.Column(db.String(10000))
