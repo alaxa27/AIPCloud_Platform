@@ -28,7 +28,7 @@ def classify(url):
                     data[r[0]] = round((r[1] * 100),2)
         # Delete the image after getting the analysis results
         subprocess.call(['rm', '-f', image_name])
-        g.user.save_query('/analyze/image', data)
+        g.user.save_query('/analyze/image', data, 1)
         return jsonify(data)
     except error.HTTPError as err:
         return (jsonify({'Error in the image URL': 'Code Error: {}'.format(err.code)}), 400, {})
