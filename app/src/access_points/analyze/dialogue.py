@@ -15,7 +15,7 @@ def analyzer(dialogueAnalyzer):
                 "Pertinence B": round(estim[1] * 100, 2),
                 "Pente B": round(estim[4], 4),
                 "Pertinence totale": round(estim[2] * 100, 2)}
-        g.user.save_query('/analyze/dialogue', data)
+        g.user.save_query('/analyze/dialogue', data, 1)
         return jsonify(data)
     except Exception as e:
         abort(500, e)
