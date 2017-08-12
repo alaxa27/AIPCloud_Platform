@@ -1,4 +1,4 @@
-import os
+import os, time
 import numpy as np
 import nltk
 from keras.models import model_from_json
@@ -37,7 +37,7 @@ class CustomerServiceAnalyzer:
 
 		self.W2V = load(os.path.join(os.path.dirname(__file__), "../../data/FR_CustomService.vocab"))
 		if self.sentimentAnalyzer is None:
-			self.sentimentAnalyzer = SentenceSentimentAnalyzer()
+			self.sentimentAnalyzer = TextSentimentAnalyzer()
 			self.sentimentAnalyzer.load()
 		print("Customer service analyzer succesfully loaded.")
 		self.loaded = True
@@ -45,7 +45,8 @@ class CustomerServiceAnalyzer:
 	def analyze(self, text):
 		if not(self.loaded):
 			raise UnloadedException()
-		sentiment = self.sentimentAnalyzer.analyze(text)
+		execTime = time.time()
+		sentiment = self.sentimentAnalyzer.analyze(text)[0]
 		satisf = -sentiment[0] + sentiment[2]
 
 		text = text.lower()
@@ -64,4 +65,5 @@ class CustomerServiceAnalyzer:
 
 		agress = self.agressAnalyzer.predict(np.asarray([vector]))[0][0]
 		refund = self.refundAnalyzer.predict(np.asarray([vector]))[0][0]
-		return [ satisf, agress, refund ]
+		execTime = time.time() - execTime
+		return ([ satisf, agress, refund ], execTime)

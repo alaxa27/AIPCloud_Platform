@@ -32,7 +32,7 @@ class KeywordExtraction():
 	def extract(self, text, keywordCount=6, verbose=False):
 		if not(self.loaded):
 			raise UnloadedException()
-		eltime = time.time()
+		execTime = time.time()
 
 		scores = self.score_keyphrases_by_textrank(text, n_keywords=keywordCount)
 		# We want to know if there is capital letters in the original word or chunk
@@ -41,11 +41,11 @@ class KeywordExtraction():
 			index = text.lower().find(word)
 			scores[i] = (text[index:(index+len(word))], scores[i][1])
 
+		execTime = time.time() - execTime
 		if verbose:
-			eltime = time.time() - eltime
-			print("Time to extract keywords : {:6.5f} second(s).".format(eltime))
+			print("Time to extract keywords : {:6.5f} second(s).".format(execTime))
 
-		return scores
+		return (scores, execTime)
 
 	def extract_candidate_words(self, text, good_tags=set(['JJ','JJR','JJS','NN','NNP','NNS','NNPS'])):
 		# Tokenization of each word in each sentence

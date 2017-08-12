@@ -25,7 +25,7 @@ class TextSentimentAnalyzer:
 		if not(self.loaded):
 			raise UnloadedException()
 
-		eltime = time.time()
+		execTime = time.time()
 
 		text = text.lower()
 		lines = re.split(r"[.;!?]+", text)
@@ -62,10 +62,11 @@ class TextSentimentAnalyzer:
 		regModel = regression.SimpleLinearRegressionModel()
 		regModel.fit(range(N), lerp)
 		slope = regModel.parameters()[1] * N
+		
+		execTime = time.time() - execTime
 
 		if verbose:
-			eltime = time.time() - eltime
-			print("Time to analyze : {:6.5f} second(s).".format(eltime))
+			print("Time to analyze : {:6.5f} second(s).".format(execTime))
 
 			plt.plot(range(N), neg, color="r")
 			plt.plot(range(N), mid, color="b")
@@ -79,7 +80,7 @@ class TextSentimentAnalyzer:
 
 		results = [ accuracy, slope, mainLerp, variance ]
 		results = np.hstack((distrib, results))
-		return results
+		return (results, execTime)
 
 	def summary(self, inputVector):
 		distrib = inputVector[0:3]
