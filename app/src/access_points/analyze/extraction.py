@@ -12,7 +12,8 @@ def extract(text, sentimentBool, volume, keywords):
         if sentimentBool:
             sentimentBool = int(sentimentBool)
 
-        keywords = keywords.extract(text, keywordCount=volume, verbose=True)
+        analysis = keywords.extract(text, keywordCount=volume, verbose=True)
+        keywords = analysis.res
         data = []
         for key in keywords:
             if  sentimentBool:

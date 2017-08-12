@@ -36,7 +36,8 @@ class TextSentimentAnalyzer:
 
 		for line in lines:
 			if len(line) > 3:
-				an = self.analyzer.analyze(line)
+				results = self.analyzer.analyze(line)
+				an = results.res
 				w = abs(an[2] - an[0]) + abs(an[1] - an[0]) + abs(an[2] - an[1])
 				w /= 3
 				classes.append(an)
@@ -62,8 +63,6 @@ class TextSentimentAnalyzer:
 		regModel = regression.SimpleLinearRegressionModel()
 		regModel.fit(range(N), lerp)
 		slope = regModel.parameters()[1] * N
-		
-		execTime = time.time() - execTime
 
 		if verbose:
 			print("Time to analyze : {:6.5f} second(s).".format(execTime))
@@ -80,6 +79,7 @@ class TextSentimentAnalyzer:
 
 		results = [ accuracy, slope, mainLerp, variance ]
 		results = np.hstack((distrib, results))
+		execTime = time.time() - execTime
 		return (results, execTime)
 
 	def summary(self, inputVector):

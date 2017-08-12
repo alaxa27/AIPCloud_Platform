@@ -4,7 +4,8 @@ def analyzer(text, textAnalyzer):
     if text is None:
         abort(400)
     try:
-        results = textAnalyzer.analyze(text, verbose=False)
+        analysis = textAnalyzer.analyze(text, verbose=False)
+        results = analysis.res
         data = {'positivity': round(results[2] * 100, 2),
                 'neutrality': round(results[1] * 100, 2),
                 'negativity': round(results[0] * 100, 2),

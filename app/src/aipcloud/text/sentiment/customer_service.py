@@ -46,7 +46,8 @@ class CustomerServiceAnalyzer:
 		if not(self.loaded):
 			raise UnloadedException()
 		execTime = time.time()
-		sentiment = self.sentimentAnalyzer.analyze(text)[0]
+		results = self.sentimentAnalyzer.analyze(text)[0]
+		sentiment = results.res
 		satisf = -sentiment[0] + sentiment[2]
 
 		text = text.lower()
@@ -66,4 +67,4 @@ class CustomerServiceAnalyzer:
 		agress = self.agressAnalyzer.predict(np.asarray([vector]))[0][0]
 		refund = self.refundAnalyzer.predict(np.asarray([vector]))[0][0]
 		execTime = time.time() - execTime
-		return ([ satisf, agress, refund ], execTime)
+		return {'res': [ satisf, agress, refund ], 'exec_time': execTime)

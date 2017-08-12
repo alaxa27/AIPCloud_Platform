@@ -4,7 +4,8 @@ def analyzer(text, textCS):
     if text is None:
         abort(400)
     try:
-        results = textCS.analyze(text)
+        analysis = textCS.analyze(text)
+        results = analysis.res
         data = {'sentiment': round(results[0] * 100, 2),
                 'agressivite': round(results[1] * 100, 2),
                 'remboursement': round(results[2] * 100, 2) }

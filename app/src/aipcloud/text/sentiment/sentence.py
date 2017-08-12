@@ -1,4 +1,4 @@
-import os
+import os, time
 import numpy as np
 import nltk
 from keras.models import model_from_json
@@ -27,6 +27,7 @@ class SentenceSentimentAnalyzer:
 		self.loaded = True
 
 	def analyze(self, text):
+		execTime = time.time()
 		if not(self.loaded):
 			raise UnloadedException()
 
@@ -45,4 +46,5 @@ class SentenceSentimentAnalyzer:
 					vector[i] = indexVal
 
 		predict = self.model.predict(np.asarray([vector]))
-		return predict[0]
+		execTime = time.time() - execTime
+		return {'res': predict[0], 'exec_time': execTime}

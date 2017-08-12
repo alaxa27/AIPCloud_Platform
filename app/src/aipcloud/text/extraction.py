@@ -22,7 +22,7 @@ class KeywordExtraction():
 	def load(self):
 		with open(os.path.join(os.path.dirname(__file__), "../data/fr_stopwords.txt"), 'r') as f:
 			content = f.readlines()
-		content = [x.strip() for x in content] 
+		content = [x.strip() for x in content]
 
 		self.stopwords = set.union(set(nltk.corpus.stopwords.words('french')), set(content))
 		self.punctuation = set.union(set(string.punctuation), set({"«", "»", "“", "”", "‘", "’", "'"}))
@@ -41,11 +41,11 @@ class KeywordExtraction():
 			index = text.lower().find(word)
 			scores[i] = (text[index:(index+len(word))], scores[i][1])
 
-		execTime = time.time() - execTime
 		if verbose:
 			print("Time to extract keywords : {:6.5f} second(s).".format(execTime))
 
-		return (scores, execTime)
+		execTime = time.time() - execTime
+		return {'res': scores, 'exec_time': execTime}
 
 	def extract_candidate_words(self, text, good_tags=set(['JJ','JJR','JJS','NN','NNP','NNS','NNPS'])):
 		# Tokenization of each word in each sentence
