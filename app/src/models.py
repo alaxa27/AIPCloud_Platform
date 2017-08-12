@@ -61,7 +61,8 @@ class User(db.Model):
     def save_query(self, path, data):
         if not self.admin:
             point = AccessPoint.query.filter_by(path=path).first()
-            db.session.add(Query(user_id=self.id, point_id=point.id, request=str(request.json), response=str(data)))
+            db.session.add(Query(user_id=self.id, point_id=point.id,
+                                 request=str(request.json), response=str(data)))
             db.session.commit()
 
     @staticmethod
@@ -98,5 +99,6 @@ class Query(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     point_id = db.Column(db.Integer, db.ForeignKey('access_points.id'))
     timestamp = db.Column(db.Integer, default = int(time()))
+    exec_time = db.Column(db.Integer)
     request = db.Column(db.String(1000))
     response = db.Column(db.String(1000))
