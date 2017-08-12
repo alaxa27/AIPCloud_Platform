@@ -9,7 +9,7 @@ def analyzer(text, textCS):
         data = {'sentiment': round(results[0] * 100, 2),
                 'agressivite': round(results[1] * 100, 2),
                 'remboursement': round(results[2] * 100, 2) }
-        g.user.save_query('/analyze/customer', data)
+        g.user.save_query('/analyze/customer', analysis)
         return jsonify(data)
     except Exception as e:
         abort(500, e)

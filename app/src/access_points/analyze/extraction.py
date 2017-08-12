@@ -31,7 +31,7 @@ def extract(text, sentimentBool, volume, keywords):
                     pass
             else:
                 data.append({"keyword": key[0], "score": round(key[1], 4)})
-        g.user.save_query('/analyze/extraction', data)
+        g.user.save_query('/analyze/extraction', data, analysis['exec_time'])
         return jsonify(data)
     except Exception as e:
         abort(500, e)
