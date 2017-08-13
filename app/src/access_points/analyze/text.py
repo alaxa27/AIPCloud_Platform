@@ -6,10 +6,10 @@ def analyzer(text, textAnalyzer):
     try:
         analysis = textAnalyzer.analyze(text, verbose=False)
         results = analysis['res']
-        data = {'positivity': round(results[2] * 100, 2),
-                'neutrality': round(results[1] * 100, 2),
-                'negativity': round(results[0] * 100, 2),
-                'relevance': round(results[3] * 100, 2),
+        data = {'positivity': round(results[2], 4),
+                'neutrality': round(results[1], 4),
+                'negativity': round(results[0], 4),
+                'relevance': round(results[3], 4),
                 'slope': round(results[4], 4),
                 'lerp': round(results[5], 4),
                 'variance': round(results[6], 4),

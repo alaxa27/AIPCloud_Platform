@@ -93,7 +93,7 @@ def keywords_extraction():
     txt = request.json.get('text')
     sentimentBool = request.json.get('sentiment')
     volume = request.json.get('volume')
-    return extraction.extract(txt, sentimentBool, volume, keywords)
+    return extraction.extract(txt, sentimentBool, volume, keywords, sentenceAnalyzer)
 
 
 @app.route('/analyze/image', methods=['POST'])

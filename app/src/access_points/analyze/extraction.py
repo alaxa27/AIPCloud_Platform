@@ -1,7 +1,7 @@
 from flask import abort, jsonify, g
 
 
-def extract(text, sentimentBool, volume, keywords):
+def extract(text, sentimentBool, volume, keywords, sentenceAnalyzer):
     try:
         if text is None:
             abort(400)
@@ -19,12 +19,12 @@ def extract(text, sentimentBool, volume, keywords):
             if  sentimentBool:
                 if int(sentimentBool):
                     #callsentiment
+                    sentiment = sentenceAnalyzer.analyze(key[0])
 
                     data.append({"keyword": key[0], "score": round(key[1], 4), "sentiment": {
-                        "positivity": 0,
-                        "neutrality": 100,
-                        "negativity": 0,
-                        "relevance": 62.6
+                        "positivity": round(results[2], 4),
+                        "neutrality": round(results[1], 4),
+                        "negativity": round(results[0], 4)
 
                     }})
                     #Get sentiment from eachword
