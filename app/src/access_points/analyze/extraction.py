@@ -24,11 +24,11 @@ def extract(text, sentimentBool, volume, keywords, sentenceAnalyzer):
 
                     data.append({
                     "keyword": key[0],
-                    "score": str(round(key[1], 4)),
+                    "score": float(round(key[1], 4)),
                     "sentiment": {
-                        'positivity': str(round(results[2], 4)),
-                        'neutrality': str(round(results[1], 4)),
-                        'negativity': str(round(results[0], 4))
+                        'positivity': float(round(results[2], 4)),
+                        'neutrality': float(round(results[1], 4)),
+                        'negativity': float(round(results[0], 4))
                     }
                     })
                     # Get sentiment from eachword
