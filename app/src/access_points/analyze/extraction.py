@@ -19,7 +19,8 @@ def extract(text, sentimentBool, volume, keywords, sentenceAnalyzer):
             if  sentimentBool:
                 if int(sentimentBool):
                     #callsentiment
-                    sentiment = sentenceAnalyzer.analyze(key[0])
+                    analysis = sentenceAnalyzer.analyze(key[0])
+                    results = analysis['res']
 
                     data.append({"keyword": key[0], "score": round(key[1], 4), "sentiment": {
                         "positivity": round(results[2], 4),
