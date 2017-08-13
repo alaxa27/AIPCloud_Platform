@@ -18,6 +18,6 @@ def initialize():
     dialogueAnalyzer.load()
     textCS = sentiment.CustomerServiceAnalyzer(sentimentAnalyzer=sentenceAnalyzer)
     textCS.load()
-    keywords = extraction.KeywordExtraction()
+    keywords = extraction.KeywordsExtraction()
     keywords.load()
     return sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords

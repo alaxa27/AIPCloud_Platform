@@ -12,15 +12,15 @@ import pandas as pd
 import gensim
 import time
 
-from ..exceptions import UnloadedException
+from ...exceptions import UnloadedException
 
-class KeywordExtraction():
+class KeywordsExtraction():
 
 	def __init__(self):
 		self.loaded = False
 
 	def load(self):
-		with open(os.path.join(os.path.dirname(__file__), "../data/fr_stopwords.txt"), 'r') as f:
+		with open(os.path.join(os.path.dirname(__file__), "../../data/fr_stopwords.txt"), 'r') as f:
 			content = f.readlines()
 		content = [x.strip() for x in content]
 
