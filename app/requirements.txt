@@ -21,5 +21,3 @@ PyMySQL
 scikit-learn
 flask-cors
 networkx==1.11
-textblob==0.12.0
-textblob-fr==0.2.0
