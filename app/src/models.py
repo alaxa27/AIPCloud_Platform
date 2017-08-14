@@ -50,9 +50,9 @@ class User(db.Model):
 
     def verify_access(self, path):
         if not self.admin:
-            if self.id == 5:
+            if self.test == 1:
                 queries_number = Query.query.filter_by(user_id = self.id, ip_address=request.environ['REMOTE_ADDR']).count()
-                if queries_number >= 9:
+                if queries_number >= self.queries_max:
                     abort(403, 'You have exceeded the maximum number of queries permitted. Please contact JDC for more information.')
             else:
                 queries_number = Query.query.filter_by(user_id = self.id).count()
