@@ -12,6 +12,7 @@ class User(db.Model):
     email = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(32))
     admin = db.Column(db.Boolean, default=False)
+    test = db.Column(db.Boolean, default=False)
     queries_max = db.Column(db.Integer, default=-1)
     points = db.relationship("Authorization", backref='user', lazy='dynamic')
 
