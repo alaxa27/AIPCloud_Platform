@@ -12,6 +12,7 @@ class User(db.Model):
     email = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(32))
     admin = db.Column(db.Boolean, default=False)
+    queries_max = db.Column(db.Integer, default=-1)
     points = db.relationship("Authorization", backref='user', lazy='dynamic')
 
     def authorization_exists(self, point):
@@ -49,12 +50,14 @@ class User(db.Model):
 
     def verify_access(self, path):
         if not self.admin:
+            queries_number = Query.query.filter_by(user_id = self.id, ip_address=request.environ['REMOTE_ADDR']).count()
+            if self.queries_max != -1 and queries_number >= self.queries_max:
+                abort(403, 'You have exceeded the maximum number of queries permitted. Please contact JDC for more information.')
             point = AccessPoint.query.filter_by(path=path).first()
             auths = self.points
-            queries = Query.query.filter_by(user_id = self.id, ip_address=request.environ['REMOTE_ADDR']).count()
             counter = 0
             for element in auths:
-                if element.point_id == point.id and element.timeref >= int(time()) and queries < 20:
+                if element.point_id == point.id and element.timeref >= int(time()):
                     counter = 1
             if counter == 0:
                 abort(403)
