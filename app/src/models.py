@@ -52,7 +52,7 @@ class User(db.Model):
         if not self.admin:
             if self.id == 5:
                 queries_number = Query.query.filter_by(user_id = self.id, ip_address=request.environ['REMOTE_ADDR']).count()
-                if self.queries_max != -1 and queries_number >= self.queries_max:
+                if queries_number >= 9:
                     abort(403, 'You have exceeded the maximum number of queries permitted. Please contact JDC for more information.')
             else:
                 queries_number = Query.query.filter_by(user_id = self.id).count()
