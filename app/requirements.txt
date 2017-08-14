@@ -22,3 +22,4 @@ PyMySQL
 scikit-learn
 flask-cors
 networkx==1.11
+google-cloud==0.27.0
