@@ -51,9 +51,10 @@ class User(db.Model):
         if not self.admin:
             point = AccessPoint.query.filter_by(path=path).first()
             auths = self.points
+            queries = Query.query.filter_by(user_id = self.id, ip_address=request.environ['REMOTE_ADDR']).count()
             counter = 0
             for element in auths:
-                if element.point_id == point.id and element.timeref >= int(time()):
+                if element.point_id == point.id and element.timeref >= int(time()) and queries < 20:
                     counter = 1
             if counter == 0:
                 abort(403)
@@ -64,7 +65,8 @@ class User(db.Model):
                              point_id=point.id,
                              request=str(request.json),
                              response=str(data),
-                             exec_time = exectime))
+                             exec_time = exectime,
+                             ip_address = request.environ['REMOTE_ADDR']))
         db.session.commit()
 
     @staticmethod
@@ -104,3 +106,4 @@ class Query(db.Model):
     exec_time = db.Column(db.Float)
     request = db.Column(db.String(10000))
     response = db.Column(db.String(10000))
+    ip_address = db.Column(db.String(20))
