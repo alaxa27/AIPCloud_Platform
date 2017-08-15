@@ -16,12 +16,12 @@ class Speech2Text():
 
 
 
-    def analyze(content):
+    def analyze(self, content):
         timeS = time.time()
         audio = types.RecognitionAudio(content=content)
 
         # Detects speech in the audio file
-        response = self.client.recognize(config, audio)
+        response = self.client.recognize(self.config, audio)
         alternatives = response.results[0].alternatives
 
         results = []

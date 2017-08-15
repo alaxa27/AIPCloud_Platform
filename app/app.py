@@ -107,10 +107,10 @@ def image_analyzer():
 
 @app.route('/analyze/sound/speech2text', methods=['POST'])
 @auth.login_required
-def image_analyzer():
+def speech_to_text():
     g.user.verify_access('/analyze/sound/speech2text')
     url = request.json.get('audio_url')
-    return speech2text.speech2text(speechClient, url)
+    return speech2text.speech2text(url, speechClient)
 
 
 if __name__ == '__main__':
