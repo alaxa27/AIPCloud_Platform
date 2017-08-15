@@ -1,12 +1,10 @@
 
 ## Introduction
-------------
 
 Ce document montre comment utiliser cette API pour bénéficier de la puissance des services d'[AIPCloud.](http://juniordataconsulting.com/aipcloud/).
 
 
 ## Utilisation
------------
 
 ### Comptes d'utilisateurs:
 
@@ -27,8 +25,8 @@ Un compte ayant seulement l'accés aux méthodes d'analyse de texte ('client@jdc
 
 Le champ queries_max contient le nombre maximal de requêtes que l'utilisateur peut effectuer. Il est à -1 pour les utilisateurs ayant le droit à un nombre illimité de requêtes.
 
+
 ### Exemples de requêtes:
------------
 
 En utilisant son email et mot de passe, et en fonction de ses droits d'accés, L'utilisateur peut faire appel au différents points de l'API pour analyser un texte ou une image.
 
