@@ -16,17 +16,17 @@ def speech2text(url, speechClient):
         frmt = mime.split('/')[-1]
         # download the audio
         if mime.endswith("x-wav"):
-            audio_name = 'src/access_points/analyze/sound/audio.wav'
+            audio_name = 'audio.wav'
         elif mime.endswith("mpeg"):
-            audio_name = 'src/access_points/analyze/sound/audio.mp3'
+            audio_name = 'audio.mp3'
         else:
-            audio_name = 'src/access_points/analyze/sound/audio.' + frmt
-        args = ['wget', '-O', audio_name, url]
+            audio_name = 'audio.' + frmt
+        args = ['wget', '-O', 'src/access_points/analyze/sound/' + audio_name, url]
         subprocess.check_call(args)
         # The name of the audio file to transcribe
         file_name = os.path.join(
             os.path.dirname(__file__),
-            'audio.mp3')
+            audio_name)
 
         # Loads the audio into memory
         with io.open(file_name, 'rb') as audio_file:
