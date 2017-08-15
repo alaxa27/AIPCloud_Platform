@@ -36,8 +36,8 @@ class TextSentimentAnalyzer:
 
 		for line in lines:
 			if len(line) > 3:
-				analysis = self.analyzer.analyze(line)
-				an = analysis['res']
+				results = self.analyzer.analyze(line)
+				an = results['res']
 				w = abs(an[2] - an[0]) + abs(an[1] - an[0]) + abs(an[2] - an[1])
 				w /= 3
 				classes.append(an)

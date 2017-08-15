@@ -6,6 +6,7 @@ from flask import request, g, abort
 from flask_cors import CORS, cross_origin
 from src.access_points import token, init, grantaccess
 from src.access_points.analyze import image, sentence, text, dialogue, extraction, customer, word
+from src.access_points.analyze.sound import speech2text
 
 CORS(app)
 
@@ -14,6 +15,7 @@ textAnalyzer = None
 dialogueAnalyzer = None
 textCS = None
 keywords = None
+speechClient = None
 
 
 @auth.verify_password
@@ -24,8 +26,8 @@ def verify_password(email_or_token, password):
 
 @app.before_first_request
 def initialization():
-    global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords
-    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords = init.initialize()
+    global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords, speechClient
+    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords, speechClient = init.initialize()
 
 
 @app.route('/token')
@@ -102,6 +104,13 @@ def image_analyzer():
     g.user.verify_access('/analyze/image')
     url = request.json.get('image_url')
     return image.classify(url)
+
+@app.route('/analyze/sound/speech2text', methods=['POST'])
+@auth.login_required
+def image_analyzer():
+    g.user.verify_access('/analyze/sound/speech2text')
+    url = request.json.get('audio_url')
+    return speech2text.speech2text(speechClient, url)
 
 
 if __name__ == '__main__':

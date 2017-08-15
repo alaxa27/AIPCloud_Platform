@@ -1,5 +1,6 @@
 from flask import abort, g
 from ..aipcloud.text import sentiment, extraction
+from ..aipcloud.sound import Speech2Text
 # from .. import db
 # from ..initialize_db import InitializeDB
 
@@ -20,4 +21,5 @@ def initialize():
     textCS.load()
     keywords = extraction.KeywordsExtraction()
     keywords.load()
-    return sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords
+    speechClient = Speech2Text()
+    return sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords, speechClient
