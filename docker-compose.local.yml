@@ -4,4 +4,6 @@ web:
     service: web
   ports:
     - "80:5000"
+  environment:
+    - GOOGLE_APPLICATION_CREDENTIALS=/app/gcloud_credentials/jdccloud-eafb7e28afcc.json
   command: python app.py
