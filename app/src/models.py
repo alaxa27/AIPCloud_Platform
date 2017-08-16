@@ -10,7 +10,7 @@ class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(32), index=True)
-    password_hash = db.Column(db.String(32))
+    password_hash = db.Column(db.Text)
     admin = db.Column(db.Boolean, default=False)
     test = db.Column(db.Boolean, default=False)
     queries_max = db.Column(db.Integer, default=-1)
@@ -94,7 +94,7 @@ class User(db.Model):
 class AccessPoint(db.Model):
     __tablename__ = 'access_points'
     id = db.Column(db.Integer, primary_key=True)
-    path = db.Column(db.String(20), index=True)
+    path = db.Column(db.String(100), index=True)
     method = db.Column(db.String(6), default = 'POST')
     users = db.relationship("Authorization", backref='point', lazy='dynamic')
 
