@@ -12,7 +12,7 @@ class Speech2Text():
         self.config = types.RecognitionConfig(
             encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
             sample_rate_hertz=16000,
-            language_code='fr-FR')
+            language_code='en-US')
 
 
 
