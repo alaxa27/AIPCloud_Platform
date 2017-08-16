@@ -19,6 +19,7 @@ def speech2text(url, speechClient):
             audio_name = 'audio.wav'
         elif mime.endswith("mpeg"):
             audio_name = 'audio.mp3'
+            raise Exception('Filetype not supported.')
         else:
             audio_name = 'audio.' + frmt
         args = ['wget', '-O', 'src/access_points/analyze/sound/' + audio_name, url]
