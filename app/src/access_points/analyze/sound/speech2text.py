@@ -42,8 +42,8 @@ def speech2text(url, speechClient):
         return (jsonify({'Error in the image URL': 'Code Error: {}'.format(err.code)}), 400, {})
     except error.URLError as e:
         return (jsonify({'Error': 'There is an error in the image URL'}), 400, {})
-    # except Exception as e:
-        # abort(500, e)
+    except Exception as e:
+        abort(500, e)
     finally:
         # Delete the audio under all circumstances
         subprocess.call(['rm', '-f', audio_name])
