@@ -28,7 +28,7 @@ Le champ queries_max contient le nombre maximal de requêtes que l'utilisateur p
 
 ### Exemples de requêtes:
 
-En utilisant son email et mot de passe, et en fonction de ses droits d'accés, L'utilisateur peut faire appel au différents points de l'API pour analyser un texte ou une image.
+En utilisant son email et mot de passe, et en fonction de ses droits d'accés, L'utilisateur peut faire appel au différents points de l'API pour analyser un texte, une image ou un audio.
 
 #### Analyse de phrase:
 
@@ -136,6 +136,23 @@ En utilisant son email et mot de passe, et en fonction de ses droits d'accés, L
 
     $ curl -u image@jdc.fr:jdc -i -X POST -H "Content-Type: application/json" -d '{"image_url": "https://media1.britannica.com/eb-media/95/156695-131-FF89C9FA.jpg" }' http://0.0.0.0:80/analyze/image
 
+
+#### Transcription d'un fichier audio:
+
+    $ curl -u text@jdc.fr:jdc -i -X POST -H "Content-Type: application/json" -d '{"audio_url":"https://www.arobase.org/wp-content/sons/paroles/vousavezducourrier.wav"}' http://0.0.0.0:80/analyze/sound/speech2text
+
+    HTTP/1.0 200 OK
+    Content-Type: application/json
+    Access-Control-Allow-Origin: *
+    Content-Length: 56
+    Server: Werkzeug/0.12.2 Python/3.5.3
+    Date: Wed, 16 Aug 2017 19:05:01 GMT
+
+    {
+      "alternatives": [
+        "vous avez du courrier"
+      ]
+    }
 
 En utilsant un email/mot de passe érroné(s), l'accés au point demandé est refusé:
 
