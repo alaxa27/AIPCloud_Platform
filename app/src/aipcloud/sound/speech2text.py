@@ -22,6 +22,8 @@ class Speech2Text():
 
         # Detects speech in the audio file
         response = self.client.recognize(self.config, audio)
+        if len(response.results) == 0:
+            raise Exception('The server did not send any recognition results.')
         alternatives = response.results[0].alternatives
 
         results = []
