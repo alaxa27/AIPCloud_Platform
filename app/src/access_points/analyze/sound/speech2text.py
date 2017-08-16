@@ -17,6 +17,7 @@ def speech2text(url, speechClient):
         if mime.endswith("x-wav"):
             audio_name = 'database/audio.wav'
         elif mime.endswith("mpeg"):
+            audio_name = 'database/audio.mp3'
             raise Exception('Filetype not supported.')
         else:
             audio_name = 'database/audio.' + frmt
