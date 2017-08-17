@@ -40,10 +40,10 @@ class User(db.Model):
         self.points.remove(point)
 
     def hash_password(self, password):
-        self.password_hash = password
+        self.password_hash = pwd_context.encrypt(password)
 
     def verify_password(self, password):
-        return password == self.password_hash
+        return pwd_context.verify(password, self.password_hash)
 
     def generate_auth_token(self, expiration):
         s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
