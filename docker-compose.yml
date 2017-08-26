@@ -4,6 +4,8 @@ server:
   volumes:
     - ./server/conf.d:/etc/nginx/conf.d
     - ./server/ssl:/etc/nginx/ssl
+    - ./server/dhparam:/etc/nginx/dhparam
+    - /etc/letsencrypt/:/etc/letsencrypt/
       #- ./app/static:/app/static
   links:
     - web:web
