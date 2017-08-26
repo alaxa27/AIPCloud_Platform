@@ -7,5 +7,3 @@ COPY requirements.txt .
 RUN pip3 install -r ./requirements.txt
 COPY requirements2.txt .
 RUN pip3 install -r ./requirements2.txt
-
-COPY ssl_cert /etc/nginx/ssl_cert
