@@ -5,7 +5,7 @@ from src.authentication import Authentication
 from flask import request, g, abort
 from flask_cors import CORS, cross_origin
 from src.access_points import token, init, grantaccess
-from src.access_points.analyze import image, sentence, text, dialogue, extraction, customer, word
+from src.access_points.analyze import image, sentence, text, dialogue, extraction, customer, intent, word
 from src.access_points.analyze.sound import speech2text
 
 CORS(app)
@@ -14,6 +14,7 @@ sentenceAnalyzer = None
 textAnalyzer = None
 dialogueAnalyzer = None
 textCS = None
+intentAnalyzer = None
 keywords = None
 speechClient = None
 
@@ -26,8 +27,8 @@ def verify_password(email_or_token, password):
 
 @app.before_first_request
 def initialization():
-    global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords, speechClient
-    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, keywords, speechClient = init.initialize()
+    global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, intentAnalyzer, keywords, speechClient
+    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, intentAnalyzer, keywords, speechClient = init.initialize()
 
 
 @app.route('/token')
@@ -80,6 +81,12 @@ def customer_service_analyzer():
     txt = request.json.get('text')
     return customer.analyzer(txt, textCS)
 
+@app.route('/analyze/intent', methods=['POST'])
+@auth.login_required
+def intent_analyzer():
+    g.user.verify_access('/analyze/intent')
+    txt = request.json.get('text')
+    return intent.analyzer(txt, intentAnalyzer)
 
 @app.route('/analyze/dialogue', methods=['GET'])
 @auth.login_required

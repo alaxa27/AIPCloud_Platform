@@ -4,12 +4,14 @@ def analyzer(text, textCS):
     if text is None:
         abort(400)
     try:
-        #analysis = textCS.analyze(text)
-        #results = analysis['res']
-        data = {'sentiment': 0.3423,
-                'agressivity': 0.2167,
-                'refund': 0.4521}
-        g.user.save_query('/analyze/customer', "none", 1)
+        analysis = textCS.analyze(text)
+        results = analysis['res']
+        data = {
+        'satisfaction': float(round(results[0], 4)),
+        'agressivity': float(round(results[1], 4)),
+        'refund': float(round(results[2], 4))
+        }
+        g.user.save_query('/analyze/customer', data, anlaysys['exec_time'])
         return jsonify(data)
     except Exception as e:
         abort(500, e)
