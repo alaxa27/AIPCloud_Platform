@@ -11,7 +11,7 @@ def analyzer(text, textCS):
         'agressivity': float(round(results[1], 4)),
         'refund': float(round(results[2], 4))
         }
-        g.user.save_query('/analyze/customer', data, anlaysys['exec_time'])
+        g.user.save_query('/analyze/customer', data, analysis['exec_time'])
         return jsonify(data)
     except Exception as e:
         abort(500, e)

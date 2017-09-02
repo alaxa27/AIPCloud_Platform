@@ -19,9 +19,9 @@ def initialize():
     dialogueAnalyzer.load()
     textCS = sentiment.CustomerServiceAnalyzer(sentimentAnalyzer=sentenceAnalyzer)
     textCS.load()
-    intentAnalyzer = sentiment.IntentAnalyzer(analyzer=intentAnalyzer)
+    intentAnalyzer = sentiment.IntentAnalyzer()
     intentAnalyzer.load()
     keywords = extraction.KeywordsExtraction()
     keywords.load()
     speechClient = Speech2Text()
-    return sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, intentAnalyzer, keywords, speechClient
+    return sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient

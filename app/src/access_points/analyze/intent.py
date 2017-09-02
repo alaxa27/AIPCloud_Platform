@@ -11,7 +11,7 @@ def analyzer(text, intentAnalyzer):
         'threat': float(round(results[1], 4)),
         'opinion': float(round(results[2], 4))
         }
-        g.user.save_query('/analyze/intent', data, anlaysys['exec_time'])
+        g.user.save_query('/analyze/intent', data, analysis['exec_time'])
         return jsonify(data)
     except Exception as e:
         abort(500, e)

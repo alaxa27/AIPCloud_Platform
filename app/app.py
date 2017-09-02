@@ -28,7 +28,7 @@ def verify_password(email_or_token, password):
 @app.before_first_request
 def initialization():
     global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, intentAnalyzer, keywords, speechClient
-    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, intentAnalyzer, keywords, speechClient = init.initialize()
+    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient = init.initialize()
 
 
 @app.route('/token')
