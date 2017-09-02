@@ -46,8 +46,8 @@ class CustomerServiceAnalyzer:
 		if not(self.loaded):
 			raise UnloadedException()
 		execTime = time.time()
-		results = self.sentimentAnalyzer.analyze(text)[0]
-		sentiment = results.res
+		results = self.sentimentAnalyzer.analyze(text)
+		sentiment = results["res"]
 		satisf = -sentiment[0] + sentiment[2]
 
 		text = text.lower()
