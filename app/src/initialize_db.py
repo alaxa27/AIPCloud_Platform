@@ -27,7 +27,8 @@ class InitializeDB(object):
                  '/analyze/customer',
                  '/analyze/dialogue',
                  '/analyze/extraction',
-                 '/analyze/image']
+                 '/analyze/image',
+                 '/analyze/intent']
         for path in paths:
             if path == '/analyze/dialogue':
                 db.session.add(AccessPoint(path=path, method='GET'))
