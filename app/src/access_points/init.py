@@ -1,11 +1,11 @@
 from flask import abort, g
 from ..aipcloud.text import sentiment, extraction
 from ..aipcloud.sound import Speech2Text
-# from .. import db
-# from ..initialize_db import InitializeDB
+#from .. import db
+#from ..initialize_db import InitializeDB
 
 def initialize():
-    # InitializeDB(db)
+    #InitializeDB(db)
     # The database is already initialized
     import nltk
     nltk.download("punkt")

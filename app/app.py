@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*
-from src import app, auth, db
-from src.initialize_db import InitializeDB
+from src import app, auth
 from src.authentication import Authentication
 from flask import request, g, abort
 from flask_cors import CORS, cross_origin
@@ -28,7 +27,6 @@ def verify_password(email_or_token, password):
 
 @app.before_first_request
 def initialization():
-    db_init = InitializeDB(db)
     global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, intentAnalyzer, keywords, speechClient
     sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient = init.initialize()
 
