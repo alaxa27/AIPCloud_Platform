@@ -57,7 +57,7 @@ def adminify():
         email = request.json.get('email')
     return userAP.adminify(email)
 
-app.route('/users/deadminify', methods=['POST'])
+@app.route('/users/deadminify', methods=['POST'])
 @auth.login_required
 def deadminify():
     if not g.user.admin:
