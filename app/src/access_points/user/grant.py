@@ -1,4 +1,4 @@
-from ..models import User, AccessPoint
+from ...models import User, AccessPoint
 from flask import abort
 
 

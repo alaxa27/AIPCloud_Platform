@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*
 from src import app, auth
 from src.authentication import Authentication
-from flask import request, g, abort
+from flask import request, g, abort, json
 from flask_cors import CORS, cross_origin
-from src.access_points import token, init, grantaccess
+from src.access_points import init
+from src.access_points import user as userAP
 from src.access_points.analyze import image, sentence, text, dialogue, extraction, customer, intent, word
 from src.access_points.analyze.sound import speech2text
 
@@ -30,15 +31,27 @@ def initialization():
     global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, intentAnalyzer, keywords, speechClient
     sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient = init.initialize()
 
+@app.route('/users/add', methods=['POST'])
+@auth.login_required
+def add_user():
+    if not g.user.admin:
+        abort(403, 'You are not an admin! Please contact Benjamin Dallard.')
+    else:
+        email = request.json.get('email')
+        password = request.json.get('password')
+        adminBool = request.json.get('admin')
+        access_points = json.loads(request.get_json())['access_points']
+        return userAP.add(email, password, adminBool, access_points)
+
 
 @app.route('/token')
 @auth.login_required
 def get_auth_token():
     user = g.user
-    return token.generate_token(user)
+    return userAP.generate_token(user)
 
 
-@app.route('/grantaccess', methods=['POST'])
+@app.route('/users/grant', methods=['POST'])
 @auth.login_required
 def grant_access():
     if not g.user.admin:
@@ -47,7 +60,7 @@ def grant_access():
         email = request.json.get('email')
         route = request.json.get('route')
         timeref = request.json.get('timeref')
-    return grantaccess.grant(email, route, timeref)
+    return userAP.grant(email, route, timeref)
 
 
 @app.route('/analyze/word', methods=['POST'])

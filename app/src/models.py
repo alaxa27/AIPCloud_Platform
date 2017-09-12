@@ -20,6 +20,10 @@ class User(db.Model):
         with db.session.no_autoflush:
             return Authorization.query.filter_by(user_id = self.id, point_id = point.id).first()
 
+    def save_user(self):
+        db.session.add(self)
+        db.session.commit()
+
     def grant_access_to(self, point, timeref=None):
         auth = self.authorization_exists(point)
         if timeref is None:
