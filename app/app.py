@@ -41,6 +41,24 @@ def add_user():
         password = request.json.get('password')
         return userAP.add(email, password)
 
+@app.route('/users/delete', methods=['POST'])
+@auth.login_required
+def delete_user():
+    if not g.user.admin:
+        abort(403, 'You are not an admin! Please contact Benjamin Dallard.')
+    else:
+        email = request.json.get('email')
+        return userAP.delete(email)
+
+@app.route('/users/change_password', methods=['POST'])
+@auth.login_required
+def change_password():
+    email = request.json.get('email')
+    password = request.json.get('password')
+    if g.user.admin or g.user.email == email:
+        return userAP.change_password(email, password)
+    else:
+        abort(403, 'You are not allowed to change {}\'s password.'.format(email))
 
 @app.route('/token')
 @auth.login_required

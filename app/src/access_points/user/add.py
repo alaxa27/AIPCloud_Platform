@@ -12,11 +12,11 @@ def add(email, password):
             raise Exception('This email is already taken.')
         if len(password) < 6:
             raise Exception('The password is too short.')
-                
+
         user = User(email=email)
 
         user.hash_password(password)
-        user.save_user()
+        user.add()
         return "User with email '{}' is successfully created.".format(email), 201
     except Exception as e:
         abort(500, e)

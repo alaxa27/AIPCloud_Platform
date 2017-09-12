@@ -23,8 +23,18 @@ class User(db.Model):
         with db.session.no_autoflush:
             return Authorization.query.filter_by(user_id = self.id, point_id = point.id).first()
 
-    def save_user(self):
+    def save(self):
+        db.session.commit()
+        
+    def add(self):
         db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        for point in points:
+            auth = Authorization.query.filter_by(user_id = self.id, point_id = point.id).first()
+            db.session.delete(auth)
+        db.session.delete(self)
         db.session.commit()
 
     def set_queries_max(self, queries_max):
