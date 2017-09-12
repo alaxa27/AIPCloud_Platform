@@ -58,9 +58,9 @@ def grant_access():
         abort(403, 'You are not an admin! Please contact Benjamin Dallard.')
     else:
         email = request.json.get('email')
-        route = request.json.get('route')
+        path = request.json.get('path')
         timeref = request.json.get('timeref')
-    return userAP.grant(email, route, timeref)
+    return userAP.grant(email, path, timeref)
 
 
 @app.route('/analyze/word', methods=['POST'])
