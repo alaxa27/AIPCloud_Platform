@@ -3,8 +3,8 @@ from flask import abort
 
 
 def grant(email, path, timeref):
-    if not email or not route:
-        abort(400, 'You have to precise the user\'s email as well as the route of the access point.')
+    if not email or not path:
+        abort(400, 'You have to give the user\'s email as well as the the access point\'s path.')
     try:
         user = User.query.filter_by(email=email).first()
         ap = AccessPoint.query.filter_by(path=path).first()
