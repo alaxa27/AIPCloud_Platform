@@ -51,7 +51,7 @@ def get_auth_token():
 
 @app.route('/users/adminify', methods=['POST'])
 @auth.login_required
-def grant_access():
+def adminify():
     if not g.user.admin:
         abort(403, 'You are not an admin! Please contact Benjamin Dallard.')
     else:
