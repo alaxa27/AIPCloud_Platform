@@ -2,7 +2,7 @@ from ...models import User, AccessPoint
 from flask import abort
 
 
-def adminify(email):
+def deadminify(email):
     if not email:
         abort(400, 'You have to give the user\'s email.')
     try:
