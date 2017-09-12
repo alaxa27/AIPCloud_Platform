@@ -5,6 +5,10 @@ from passlib.apps import custom_app_context as pwd_context
 from flask import abort, request
 from time import time
 
+from .authorization import Authorization
+from .accessPoint import AccessPoint
+from .query import Query
+
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
