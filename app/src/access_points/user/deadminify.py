@@ -10,6 +10,6 @@ def deadminify(email):
         if user is None:
             raise Exception('User with email: {} does not exist.'.format(email))
         user.deadminify()
-        return 'User {} is now an admin.'.format(email), 201
+        return 'User {} is not an admin anymore.'.format(email), 201
     except Exception as e:
         abort(500, e)
