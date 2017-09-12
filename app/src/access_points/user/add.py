@@ -11,13 +11,16 @@ def add(email, password, adminBool, access_points):
             user = User(email=email, admin=True)
         else:
             user = User(email=email, admin=False)
-            
+
         user.hash_password(password)
         user.save_user()
         if type(access_points) is list:
             for ap in access_points:
                 path = ap['path']
-                timeref = ap['timeref']
+                try:
+                    timeref = ap['timeref']
+                except:
+                    timeref = None
                 user.grant_access_to(path, timeref)
         return "User with email '{}' is successfully created.".format(email), 201
     except Exception as e:
