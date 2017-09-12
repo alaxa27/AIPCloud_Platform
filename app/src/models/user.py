@@ -38,6 +38,10 @@ class User(db.Model):
         self.admin = True
         db.session.commit()
 
+    def deadminify(self):
+        self.admin = False
+        db.session.commit()
+
     def grant_access_to(self, point, timeref=None):
         if point is None:
             raise Exception('This access point does not exist.')

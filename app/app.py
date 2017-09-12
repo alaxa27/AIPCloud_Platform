@@ -39,8 +39,7 @@ def add_user():
     else:
         email = request.json.get('email')
         password = request.json.get('password')
-        adminBool = request.json.get('admin')
-        return userAP.add(email, password, adminBool)
+        return userAP.add(email, password)
 
 
 @app.route('/token')
@@ -58,6 +57,14 @@ def adminify():
         email = request.json.get('email')
     return userAP.adminify(email)
 
+app.route('/users/deadminify', methods=['POST'])
+@auth.login_required
+def deadminify():
+    if not g.user.admin:
+        abort(403, 'You are not an admin! Please contact Benjamin Dallard.')
+    else:
+        email = request.json.get('email')
+    return userAP.deadminify(email)
 
 @app.route('/users/grant', methods=['POST'])
 @auth.login_required
