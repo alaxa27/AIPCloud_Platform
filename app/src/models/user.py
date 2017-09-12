@@ -1,10 +1,9 @@
-from . import app, db
+from .. import app, db
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from passlib.apps import custom_app_context as pwd_context
 from flask import abort, request
 from time import time
-
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -31,8 +30,13 @@ class User(db.Model):
         else:
             return False
 
+    def adminify(self):
+        self.admin = True
+        db.session.commit()
 
     def grant_access_to(self, point, timeref=None):
+        if point is None:
+            raise Exception('This access point does not exist.')
         auth = self.authorization_exists(point)
         if timeref is None:
             timeref = int(time()) + 86400
@@ -101,30 +105,3 @@ class User(db.Model):
             return None    # invalid token
         user = User.query.get(data['id'])
         return user
-
-
-class AccessPoint(db.Model):
-    __tablename__ = 'access_points'
-    id = db.Column(db.Integer, primary_key=True)
-    path = db.Column(db.String(100), index=True)
-    method = db.Column(db.String(6), default = 'POST')
-    users = db.relationship("Authorization", backref='point', lazy='dynamic')
-
-
-class Authorization(db.Model):
-    __tablename__ = 'authorizations'
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    point_id = db.Column(db.Integer, db.ForeignKey('access_points.id'), primary_key=True)
-    timeref = db.Column(db.Integer)
-
-
-class Query(db.Model):
-    __tablename__ = 'history'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    point_id = db.Column(db.Integer, db.ForeignKey('access_points.id'))
-    timestamp = db.Column(db.Integer, default = int(time()))
-    exec_time = db.Column(db.Float)
-    request = db.Column(db.String(10000))
-    response = db.Column(db.String(10000))
-    ip_address = db.Column(db.String(20))

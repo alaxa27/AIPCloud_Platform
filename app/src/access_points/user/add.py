@@ -1,7 +1,6 @@
 from flask import abort
 
-from ...models import User, AccessPoint
-from .grant import grant
+from ...models import User
 
 
 def add(email, password, adminBool):

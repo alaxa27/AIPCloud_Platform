@@ -8,8 +8,6 @@ def grant(email, path, timeref):
     try:
         user = User.query.filter_by(email=email).first()
         ap = AccessPoint.query.filter_by(path=path).first()
-        if ap is None:
-            raise Exception('This access point does not exist.')
         if user.grant_access_to(ap, timeref):
             return "The access to '{}' for '{}' is successfully updated.".format(path, email), 200
         return "The access to '{}' is successfully granted for '{}'.".format(path, email), 201
