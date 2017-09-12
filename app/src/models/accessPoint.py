@@ -1,4 +1,5 @@
 from .. import db
+from .authorization import Authorization
 
 class AccessPoint(db.Model):
     __tablename__ = 'access_points'
