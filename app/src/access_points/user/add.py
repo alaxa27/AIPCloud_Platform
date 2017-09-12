@@ -14,7 +14,6 @@ def add(email, password, adminBool, access_points):
             user = User(email=email, admin=False)
 
         user.hash_password(password)
-        user.save_user()
         if type(access_points) is list:
             for ap in access_points:
                 path = ap['path']
@@ -28,6 +27,7 @@ def add(email, password, adminBool, access_points):
                     user.grant_access_to(accessP, timeref)
                 else:
                     raise Exception('One of the access_points provided does not exist.')
+        user.save_user()
         return "User with email '{}' is successfully created.".format(email), 201
     except Exception as e:
         abort(500, e)
