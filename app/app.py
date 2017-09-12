@@ -40,7 +40,7 @@ def add_user():
         email = request.json.get('email')
         password = request.json.get('password')
         adminBool = request.json.get('admin')
-        access_points = json.loads(request.get_json())['access_points']
+        access_points = request.json.get('access_points')
         return userAP.add(email, password, adminBool, access_points)
 
 

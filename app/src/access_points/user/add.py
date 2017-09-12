@@ -1,6 +1,7 @@
-from ...models import User
 from flask import abort
 
+from ...models import User, AccessPoint
+from .grant import grant
 
 
 def add(email, password, adminBool, access_points):
@@ -21,7 +22,12 @@ def add(email, password, adminBool, access_points):
                     timeref = ap['timeref']
                 except:
                     timeref = None
-                user.grant_access_to(path, timeref)
+
+                accessP = AccessPoint.query.filter_by(path=path).first()
+                if accessP is not None:
+                    user.grant_access_to(accessP, timeref)
+                else:
+                    raise Exception('One of the access_points provided does not exist.')
         return "User with email '{}' is successfully created.".format(email), 201
     except Exception as e:
         abort(500, e)

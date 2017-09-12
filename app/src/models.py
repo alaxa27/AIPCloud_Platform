@@ -24,6 +24,14 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def set_queries_max(self, queries_max):
+        if type(queries_max) is int:
+            self.queries_max = queries_max
+            db.session.commit()
+        else:
+            return False
+
+
     def grant_access_to(self, point, timeref=None):
         auth = self.authorization_exists(point)
         if timeref is None:
