@@ -2,7 +2,7 @@ from flask import abort, jsonify, g
 
 
 def analyzer(sentence, sentenceAnalyzer):
-    if sentence is None:
+    if sentence is None or len(sentence.split()) == 0:
         abort(400)
     try:
         analysis = sentenceAnalyzer.analyze(sentence)

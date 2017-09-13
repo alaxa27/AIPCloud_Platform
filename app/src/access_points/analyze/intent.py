@@ -1,7 +1,7 @@
 from flask import abort, jsonify, g
 
 def analyzer(text, intentAnalyzer):
-    if text is None:
+    if text is None or len(text.split()) == 0:
         abort(400)
     try:
         analysis = intentAnalyzer.analyze(text)
