@@ -17,7 +17,7 @@ class User(db.Model):
     admin = db.Column(db.Boolean, default=False)
     test = db.Column(db.Boolean, default=False)
     queries_max = db.Column(db.Integer, default=-1)
-    points = db.relationship("Authorization", backref='user', lazy='dynamic')
+    points = db.relationship("Authorization", backref='user', lazy='joined', cascade='all,delete')
 
     def authorization_exists(self, point):
         with db.session.no_autoflush:
@@ -25,15 +25,16 @@ class User(db.Model):
 
     def save(self):
         db.session.commit()
-        
+
     def add(self):
         db.session.add(self)
         db.session.commit()
 
     def delete(self):
-        for point in points:
-            auth = Authorization.query.filter_by(user_id = self.id, point_id = point.id).first()
-            db.session.delete(auth)
+        while Authorization.query.filter_by(user_id = self.id).first() is not None:
+            auth = Authorization.query.filter_by(user_id = self.id).first()
+            auth.delete()
+
         db.session.delete(self)
         db.session.commit()
 
