@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*
-from src import app, auth
-from src.authentication import Authentication
 from flask import request, g, abort, json
 from flask_cors import CORS, cross_origin
+
+from src import app, auth
+from src.authentication import Authentication
 from src.access_points import init
 from src.access_points import user as userAP
 from src.access_points.analyze import image, sentence, text, dialogue, extraction, customer, intent, word
@@ -162,8 +163,11 @@ def image_analyzer():
 @auth.login_required
 def speech_to_text():
     g.user.verify_access('/analyze/sound/speech2text')
-    url = request.json.get('audio_url')
-    return speech2text.speech2text(url, speechClient)
+    file = request.files['file']
+    if not file:
+        abort(400, "There was no file uploaded in the request.")
+
+    return speech2text.speech2text(file, speechClient)
 
 
 if __name__ == '__main__':
