@@ -4,10 +4,9 @@ from werkzeug.utils import secure_filename
 import subprocess
 import io, os
 
-from ....aipcloud.sound import Speech2Text
 from .... import app
 
-def speech2text(file, speechClient):
+def recognition(file, speechEmotionAnalyzer):
     if file is None:
         abort(400, 'Please make sure you have correctly entered the audio_url in the JSON format.')
     try:
@@ -25,36 +24,33 @@ def speech2text(file, speechClient):
         #     audio_name = 'database/audio.' + frmt
         # args = ['wget', '-O', audio_name, url]
         # subprocess.check_call(args)
-        # subprocess.call(['sox', audio_name, '-t', 'raw', '--channels=1', '--bits=16', '--rate=16000', '--encoding=signed-integer', '--endian=little', 'database/audio.raw'])
         # The name of the audio file to transcribe
         UPLOAD_FOLDER = './uploads'
         ALLOWED_EXTENSIONS = set(['wav'])
 
-        app.logger.error("Here1")
         if allowed_file(ALLOWED_EXTENSIONS, file.filename):
             filename = secure_filename(file.filename)
             file_path = os.path.join(os.path.dirname(__file__), UPLOAD_FOLDER, filename)
             file.save(file_path)
         else:
-            raise Exception("The format of the file you provided is not accepted.")
+            raise Exception("The file's format you provided is not accepted.")
 
-        app.logger.error("Here2")
-
-        subprocess.call(['sox', file_path, '-t', 'raw', '--channels=1', '--bits=16', '--rate=16000', '--encoding=signed-integer', '--endian=little', file_path + '.raw'])
-        app.logger.error("Here3")
-
-        raw_file = file_path + '.raw'
+        subprocess.call(['sox', file_path, file_path + '.wav'])
         # Loads the audio into memory
-        with io.open(raw_file, 'rb') as audio_file:
-            content = audio_file.read()
-        app.logger.error("Here4")
-        analysis = speechClient.analyze(content)
-        app.logger.error("Here10")
+        analysis = speechEmotionAnalyzer.analyze(file_path)
+        results = analysis['res']
         data = {
-            'alternatives': analysis['res']
+            'neutral': float(round(results[0], 4)),
+            'happy': float(round(results[1], 4)),
+            'calm': float(round(results[2], 4)),
+            'sad': float(round(results[3], 4)),
+            'angry': float(round(results[4], 4)),
+            'fearful': float(round(results[5], 4)),
+            'disgust': float(round(results[6], 4)),
+            'surprise': float(round(results[7], 4))
             }
         # Save the query into the database
-        g.user.save_query('/analyze/sound/speech2text', data, analysis['exec_time'])
+        g.user.save_query('/analyze/sound/emotion', data, analysis['exec_time'])
         return jsonify(data)
     except error.HTTPError as err:
         return (jsonify({'Error in the image URL': 'Code Error: {}'.format(err.code)}), 400, {})
@@ -64,8 +60,10 @@ def speech2text(file, speechClient):
         abort(500, e)
     finally:
         # Delete the audio under all circumstances
-        subprocess.call(['rm', '-f', file_path])
-        subprocess.call(['rm', '-f', file_path + '.raw'])
+        try:
+            subprocess.call(['rm', '-f', file_path + '*'])
+        except Exception as e:
+            abort(500, e)
 
 def allowed_file(ALLOWED_EXTENSIONS, filename):
     return '.' in filename and \

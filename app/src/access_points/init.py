@@ -1,6 +1,7 @@
 from flask import abort, g
 from ..aipcloud.text import sentiment, extraction
 from ..aipcloud.sound import Speech2Text
+from ..aipcloud.sound.emotion import SpeechEmotionAnalyzer
 #from .. import db
 #from ..initialize_db import InitializeDB
 
@@ -24,4 +25,7 @@ def initialize():
     keywords = extraction.KeywordsExtraction()
     keywords.load()
     speechClient = Speech2Text()
-    return sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient
+
+    speechEmotionAnalyzer = SpeechEmotionAnalyzer()
+    speechEmotionAnalyzer.load()
+    return sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient, speechEmotionAnalyzer

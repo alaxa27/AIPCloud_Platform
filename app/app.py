@@ -9,6 +9,7 @@ from src.access_points import init
 from src.access_points import user as userAP
 from src.access_points.analyze import image, sentence, text, dialogue, extraction, customer, intent, word
 from src.access_points.analyze.sound import speech2text
+from src.access_points.analyze.sound import emotion
 
 CORS(app)
 
@@ -19,6 +20,7 @@ textCS = None
 intentAnalyzer = None
 keywords = None
 speechClient = None
+speechEmotionAnalyzer = None
 
 
 @auth.verify_password
@@ -29,8 +31,8 @@ def verify_password(email_or_token, password):
 
 @app.before_first_request
 def initialization():
-    global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, intentAnalyzer, keywords, speechClient
-    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient = init.initialize()
+    global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, intentAnalyzer, keywords, speechClient, speechEmotionAnalyzer
+    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient, speechEmotionAnalyzer = init.initialize()
 
 @app.route('/users/add', methods=['POST'])
 @auth.login_required
@@ -159,16 +161,24 @@ def image_analyzer():
     url = request.json.get('image_url')
     return image.classify(url)
 
-@app.route('/analyze/sound/speech2text', methods=['POST'])
+@app.route('/analyze/sound/speech2text', methods=['GET', 'POST'])
 @auth.login_required
 def speech_to_text():
     g.user.verify_access('/analyze/sound/speech2text')
+    if request.method == 'POST':
+        file = request.files['file']
+        # if not file:
+        #     abort(400, "There was no file uploaded in the request.")
+        app.logger.error("Here0")
+
+        return speech2text.speech2text(file, speechClient)
+
+@app.route('/analyze/sound/emotion', methods=['POST'])
+@auth.login_required
+def speech_emotion_analyzer():
+    g.user.verify_access('/analyze/sound/emotion')
     file = request.files['file']
-    if not file:
-        abort(400, "There was no file uploaded in the request.")
-
-    return speech2text.speech2text(file, speechClient)
-
+    return emotion.recognition(file, speechEmotionAnalyzer)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

@@ -2,8 +2,17 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 
+import logging
+from logging.handlers import RotatingFileHandler
+
 # initialization
 app = Flask(__name__)
+
+handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
+
+
 app.config['SECRET_KEY'] = 'junior data consulting'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

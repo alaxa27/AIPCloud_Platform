@@ -23,3 +23,6 @@ scikit-learn
 flask-cors
 networkx==1.11
 google-cloud==0.27.0
+scipy
+soundfile
+configparser
