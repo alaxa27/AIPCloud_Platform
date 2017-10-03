@@ -26,7 +26,7 @@ def recognition(file, speechEmotionAnalyzer):
         # subprocess.check_call(args)
         # The name of the audio file to transcribe
         UPLOAD_FOLDER = './uploads'
-        ALLOWED_EXTENSIONS = set(['wav'])
+        ALLOWED_EXTENSIONS = set(['wav', 'mp3'])
 
         if allowed_file(ALLOWED_EXTENSIONS, file.filename):
             filename = secure_filename(file.filename)
