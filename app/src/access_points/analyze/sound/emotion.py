@@ -37,7 +37,7 @@ def recognition(file, speechEmotionAnalyzer):
 
         subprocess.call(['sox', file_path, file_path + '.wav'])
         # Loads the audio into memory
-        analysis = speechEmotionAnalyzer.analyze(file_path)
+        analysis = speechEmotionAnalyzer.analyze(file_path + '.wav')
         results = analysis['res']
         data = {
             'neutral': float(round(results[0], 4)),
