@@ -177,10 +177,7 @@ def speech_to_text():
 @auth.login_required
 def speech_emotion_analyzer():
     g.user.verify_access('/analyze/sound/emotion')
-    try:
-        file = request.files['file']
-    try:
-        app.logger(request.json.get('url'))
+    file = request.files['file']
     return emotion.recognition(file, speechEmotionAnalyzer)
 
 if __name__ == '__main__':
