@@ -35,7 +35,7 @@ def speech2text(file, speechClient):
             content = audio_file.read()
         analysis = speechClient.analyze(content)
         data = {
-            'alternatives': analysis['res']
+            'results': analysis['res']
             }
         # Save the query into the database
         g.user.save_query('/analyze/sound/speech2text', data, analysis['exec_time'])

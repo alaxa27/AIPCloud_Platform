@@ -29,7 +29,7 @@ class Speech2Text():
 
         results = []
 
-        for res in response:
+        for res in response.results:
             results.append({
                 'transcript': res.alternatives[0].transcript,
                 'confidence': str(res.alternatives[0].confidence)
