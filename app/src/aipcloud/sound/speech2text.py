@@ -31,8 +31,8 @@ class Speech2Text():
 
         for res in response:
             results.append({
-                'transcript': res.alternative[0].transcript,
-                'confidence': str(res.alternative[0].confidence)
+                'transcript': res.alternatives[0].transcript,
+                'confidence': str(res.alternatives[0].confidence)
             })
 
         return {'res': results, 'exec_time': time.time() - timeS}

@@ -167,7 +167,7 @@ def speech_to_text():
     g.user.verify_access('/analyze/sound/speech2text')
     if request.method == 'POST':
         file = request.files['file']
-ww
+
         return speech2text.speech2text(file, speechClient)
 
 @app.route('/analyze/sound/emotion', methods=['POST'])
