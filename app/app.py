@@ -167,10 +167,7 @@ def speech_to_text():
     g.user.verify_access('/analyze/sound/speech2text')
     if request.method == 'POST':
         file = request.files['file']
-        # if not file:
-        #     abort(400, "There was no file uploaded in the request.")
-        app.logger.error("Here0")
-
+ww
         return speech2text.speech2text(file, speechClient)
 
 @app.route('/analyze/sound/emotion', methods=['POST'])
