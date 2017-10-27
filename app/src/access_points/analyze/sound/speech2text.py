@@ -30,10 +30,12 @@ def speech2text(file, speechClient):
         subprocess.call(['sox', file_path, '-t', 'raw', '--channels=1', '--bits=16', '--rate=16000', '--encoding=signed-integer', '--endian=little', file_path + '.raw'])
 
         raw_file = file_path + '.raw'
+
         # Loads the audio into memory
-        with io.open(raw_file, 'rb') as audio_file:
-            content = audio_file.read()
-        analysis = speechClient.analyze(raw_file)
+        # with io.open(raw_file, 'rb') as audio_file:
+        #     content = audio_file.read()
+
+        analysis = speechClient.analyze(filename, raw_file)
 
         data = {
             'results': analysis['res']
