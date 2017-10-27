@@ -1,4 +1,5 @@
 import time
+from uuid import uuid4
 
 # Imports the Google Cloud client library
 from google.cloud import speech
@@ -22,16 +23,16 @@ class Speech2Text():
             sample_rate_hertz=16000,
             language_code='fr-FR')
 
-    def analyze(self, fileName, filePath):
+    def analyze(self, filePath):
         timeS = time.time()
 
         # UPLOAD THE FILE TO GCS
-        blob = self.bucket.blob(fileName)
+        blob = self.bucket.blob(str(uuid4()))
         blob.upload_from_filename(filePath)
         # Make sure the file has a unique name
         # Then feed the analyzer with the URI provided by GCS
         uri = blob.self_link
-        audio = types.RecognitionAudio(uri=uri)
+        audio = types.RecognitionAudio(uri='gs://' + uri)
 
         # Detects speech in the audio file
         response = self.client.long_running_recognize(self.config, audio)
