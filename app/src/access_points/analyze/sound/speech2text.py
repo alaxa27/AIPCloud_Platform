@@ -33,8 +33,8 @@ def speech2text(file, speechClient):
         # Loads the audio into memory
         with io.open(raw_file, 'rb') as audio_file:
             content = audio_file.read()
-        analysis = speechClient.analyze(content)
-        
+        analysis = speechClient.analyze(raw_file)
+
         data = {
             'results': analysis['res']
             }

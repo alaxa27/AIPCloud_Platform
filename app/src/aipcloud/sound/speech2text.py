@@ -18,7 +18,7 @@ class Speech2Text():
     def analyze(self, content):
         timeS = time.time()
 
-        audio = types.RecognitionAudio(content=content)
+        audio = types.RecognitionAudio(uri=content)
 
         # Detects speech in the audio file
         response = self.client.long_running_recognize(self.config, audio)
