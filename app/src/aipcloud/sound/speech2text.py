@@ -46,7 +46,8 @@ class Speech2Text():
                 retry_count -= 1
                 time.sleep(1)
 
-            operationResults = operation.result().results
+            operationResults = operation.result()
+            operationResults = operationResults.results
             if len(operationResults) == 0:
                 raise Exception('The server did not send any recognition results.')
 
