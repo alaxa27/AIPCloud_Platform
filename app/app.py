@@ -11,9 +11,6 @@ from src.access_points.analyze import image, sentence, text, dialogue, extractio
 from src.access_points.analyze.sound import speech2text
 from src.access_points.analyze.sound import emotion
 
-import gevent
-gevent.monkey.patch_all(thread=False)
-
 CORS(app)
 
 sentenceAnalyzer = None
