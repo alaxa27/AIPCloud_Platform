@@ -17,4 +17,4 @@ web:
     service: web
   expose:
     - "8000"
-  command: gunicorn wsgi:app -b :8000 --name app --log-level=debug --log-file=- --config gunicorn.conf.py --timeout 400
+  command: gunicorn wsgi:app -b :8000 --name app --log-level=debug --log-file=- --config gunicorn.conf.py --timeout 400 -w 3
