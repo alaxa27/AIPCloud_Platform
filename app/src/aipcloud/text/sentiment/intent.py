@@ -24,13 +24,13 @@ class IntentAnalyzer:
 
 		if self.analyzer is None:
 			# Loading refund network
-			json_file = open(os.path.join(os.path.dirname(__file__), "../../data/FR_LSTM_Intent_model.json"), 'r')
+			json_file = open(os.path.join(os.sep, "data/FR_LSTM_Intent_model.json"), 'r')
 			loaded_model_json = json_file.read()
 			json_file.close()
 			self.analyzer = model_from_json(loaded_model_json)
-			self.analyzer.load_weights(os.path.join(os.path.dirname(__file__), "../../data/FR_LSTM_Intent_weights.h5"))
+			self.analyzer.load_weights(os.path.join(os.sep, "data/FR_LSTM_Intent_weights.h5"))
 
-			self.W2V = load(os.path.join(os.path.dirname(__file__), "../../data/FR_Intent.vocab"))
+			self.W2V = load(os.path.join(os.sep, "data/FR_Intent.vocab"))
 
 		print("Intent analyzer succesfully loaded.")
 		self.loaded = True

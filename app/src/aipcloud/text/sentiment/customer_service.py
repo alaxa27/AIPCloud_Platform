@@ -22,20 +22,20 @@ class CustomerServiceAnalyzer:
 		print("Loading customer service analyzer model.")
 
 		# Loading agressivity network
-		json_file = open(os.path.join(os.path.dirname(__file__), "../../data/FR_LSTM_CS_Agres_model.json"), 'r')
+		json_file = open(os.path.join(os.sep, "data/FR_LSTM_CS_Agres_model.json"), 'r')
 		loaded_model_json = json_file.read()
 		json_file.close()
 		self.agressAnalyzer = model_from_json(loaded_model_json)
-		self.agressAnalyzer.load_weights(os.path.join(os.path.dirname(__file__), "../../data/FR_LSTM_CS_Agres_weights.h5"))
+		self.agressAnalyzer.load_weights(os.path.join(os.sep, "data/FR_LSTM_CS_Agres_weights.h5"))
 
 		# Loading refund network
-		json_file = open(os.path.join(os.path.dirname(__file__), "../../data/FR_LSTM_CS_Refund_model.json"), 'r')
+		json_file = open(os.path.join(os.sep, "data/FR_LSTM_CS_Refund_model.json"), 'r')
 		loaded_model_json = json_file.read()
 		json_file.close()
 		self.refundAnalyzer = model_from_json(loaded_model_json)
-		self.refundAnalyzer.load_weights(os.path.join(os.path.dirname(__file__), "../../data/FR_LSTM_CS_Refund_weights.h5"))
+		self.refundAnalyzer.load_weights(os.path.join(os.sep, "data/FR_LSTM_CS_Refund_weights.h5"))
 
-		self.W2V = load(os.path.join(os.path.dirname(__file__), "../../data/FR_CustomService.vocab"))
+		self.W2V = load(os.path.join(os.sep, "data/FR_CustomService.vocab"))
 		if self.sentimentAnalyzer is None:
 			self.sentimentAnalyzer = TextSentimentAnalyzer()
 			self.sentimentAnalyzer.load()

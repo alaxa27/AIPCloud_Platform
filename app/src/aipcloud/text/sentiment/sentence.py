@@ -17,12 +17,12 @@ class SentenceSentimentAnalyzer:
 
 	def load(self):
 		print("Loading sentiment model.")
-		json_file = open(os.path.join(os.path.dirname(__file__), "../../data/FR_LSTM_model.json"), 'r')
+		json_file = open(os.path.join(os.sep, "data/FR_LSTM_model.json"), 'r')
 		loaded_model_json = json_file.read()
 		json_file.close()
 		self.model = model_from_json(loaded_model_json)
-		self.model.load_weights(os.path.join(os.path.dirname(__file__), "../../data/FR_LSTM_weights.h5"))
-		self.W2V = load(os.path.join(os.path.dirname(__file__), "../../data/FR.vocab"))
+		self.model.load_weights(os.path.join(os.sep, "data/FR_LSTM_weights.h5"))
+		self.W2V = load(os.path.join(os.sep, "data/FR.vocab"))
 		print("Sentiment model succesfully loaded.")
 		self.loaded = True
 

@@ -20,7 +20,7 @@ class KeywordsExtraction():
 		self.loaded = False
 
 	def load(self):
-		with open(os.path.join(os.path.dirname(__file__), "../../data/fr_stopwords.txt"), 'r') as f:
+		with open(os.path.join(os.sep, "data/fr_stopwords.txt"), 'r') as f:
 			content = f.readlines()
 		content = [x.strip() for x in content]
 

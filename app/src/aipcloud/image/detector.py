@@ -18,8 +18,8 @@ class ImageDetector:
 class FaceDetector(ImageDetector):
 
 	def load(self):
-		self.eyeCascade = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__), "../data/haarcascade_eye.xml"))
-		self.faceCascade = cv2.CascadeClassifier(os.path.join(os.path.dirname(__file__), "../data/haarcascade_face.xml"))
+		self.eyeCascade = cv2.CascadeClassifier("/data/haarcascade_eye.xml")
+		self.faceCascade = cv2.CascadeClassifier("/data/haarcascade_face.xml")
 
 	def detect(self, inputImage, detectEyes=False):
 		image = inputImage
