@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+cd /opt
 apt-get -y update && apt-get -y upgrade
 apt-get -y install vim docker.io
 
@@ -10,6 +11,5 @@ git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
 cd /opt/letsencrypt
 ./letsencrypt-auto certonly --standalone -d api.aipcloud.io
 
-cd
-cd AIPCloud_Platform
+cd /opt/AIPCloud_Platform
 docker-compose build
