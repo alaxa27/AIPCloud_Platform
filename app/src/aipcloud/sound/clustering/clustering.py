@@ -41,7 +41,7 @@ class SpeakerClusterAnalyzer:
 
         timeS = time.time()
         cfg = configparser.ConfigParser()
-        cfg.read(os.path.join(os.path.dirname(__file__), 'config.cfg')
+        cfg.read(os.path.join(os.path.dirname(__file__), 'config.cfg'))
 
         SOUND_FORMAT = cfg.get("IO", "sound_format")
         PARAM_FRAME_LENGTH = int(cfg.get("MEL", "frame_length"))
