@@ -4,4 +4,4 @@ web:
   working_dir: /app
   volumes:
     - ./app:/app
-    - /opt/weights:/app/src/aipcloud/weights
+    - /opt/data:/app/src/aipcloud/data
