@@ -25,13 +25,13 @@ class SpeakerClusterAnalyzer:
     def load(self):
         if not self.loaded:
             # We load the JSON file and create the model
-            json_file = open(os.path.join(os.sep, 'data/sound/cluster/model.json'), 'r')
+            json_file = open(os.path.join(os.sep, 'data/sound/clustering/model.json'), 'r')
             loaded_model_json = json_file.read()
             json_file.close()
             self.model = model_from_json(loaded_model_json)
             # We load the weights into our model
             self.model.load_weights(
-                os.path.join(os.sep, "/data/sound/cluster/weights.h5"))
+                os.path.join(os.sep, "/data/sound/clustering/weights.h5"))
             self.loaded = True
             print("* Loaded model from disk")
 
