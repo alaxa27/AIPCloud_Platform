@@ -22,6 +22,7 @@ intentAnalyzer = None
 keywords = None
 speechClient = None
 speechEmotionAnalyzer = None
+speakerClusterAnalyzer = None
 
 
 @auth.verify_password
@@ -32,8 +33,8 @@ def verify_password(email_or_token, password):
 
 @app.before_first_request
 def initialization():
-    global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, intentAnalyzer, keywords, speechClient, speechEmotionAnalyzer
-    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient, speechEmotionAnalyzer = init.initialize()
+    global sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, textCS, intentAnalyzer, keywords, speechClient, speechEmotionAnalyzer, speakerClusterAnalyzer
+    sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient, speechEmotionAnalyzer, speakerClusterAnalyzer = init.initialize()
 
 @app.route('/users/add', methods=['POST'])
 @auth.login_required
@@ -180,10 +181,11 @@ def speech_emotion_analyzer():
 
 @app.route('/analyze/sound/clustering', methods=['POST'])
 @auth.login_required
-def speech_emotion_analyzer():
+def speaker_cluster_analyzer():
     g.user.verify_access('/analyze/sound/clustering')
     file = request.files['file']
-    return clustering.recognition(file, speakerClusterAnalyzer)
+    count = request.json.get('speaker_count')
+    return clustering.recognition(file, count, speakerClusterAnalyzer)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

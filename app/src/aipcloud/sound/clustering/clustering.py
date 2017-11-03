@@ -35,7 +35,7 @@ class SpeakerClusterAnalyzer:
             self.loaded = True
             print("* Loaded model from disk")
 
-    def analyze(self, inputFile):
+    def analyze(self, inputFile, count=2):
         if not(self.loaded):
             raise UnloadedException()
 
@@ -106,7 +106,10 @@ class SpeakerClusterAnalyzer:
         		minDist = Z[i+1][2] - Z[i][2]
         		nb_clusters = i
 
-        clustering = AgglomerativeClustering(affinity='cosine', linkage="complete", n_clusters=2).fit_predict(layer_output)
+        if count is None:
+            count = 2
+        int(count)
+        clustering = AgglomerativeClustering(affinity='cosine', linkage="complete", n_clusters=count).fit_predict(layer_output)
         clustering_list = list(clustering)
         #clustering = KMeans(n_clusters=4).fit_predict(layer_output)
         return {'res': clustering_list, 'exec_time': time.time() - timeS}

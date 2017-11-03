@@ -6,7 +6,7 @@ import io, os
 
 from .... import app
 
-def recognition(file, speakerClusterAnalyzer):
+def recognition(file, count, speakerClusterAnalyzer):
     if file is None:
         abort(400, 'Please make sure you have correctly entered the audio_url in the JSON format.')
     try:
@@ -37,7 +37,7 @@ def recognition(file, speakerClusterAnalyzer):
 
         subprocess.call(['sox', file_path, file_path + '.wav'])
         # Loads the audio into memory
-        analysis = speakerClusterAnalyzer.analyze(file_path + '.wav')
+        analysis = speakerClusterAnalyzer.analyze(file_path + '.wav', count)
         results = analysis['res']
         data = {
             'clustering': results
