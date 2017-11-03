@@ -2,6 +2,7 @@ from flask import abort, g
 from ..aipcloud.text import sentiment, extraction
 from ..aipcloud.sound import Speech2Text
 from ..aipcloud.sound.emotion import SpeechEmotionAnalyzer
+from ..aipcloud.sound.clustering import SpeakerClusterAnalyzer
 #from .. import db
 #from ..initialize_db import InitializeDB
 
@@ -28,4 +29,6 @@ def initialize():
 
     speechEmotionAnalyzer = SpeechEmotionAnalyzer()
     speechEmotionAnalyzer.load()
-    return sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient, speechEmotionAnalyzer
+    speakerClusterAnalyzer = SpeakerClusterAnalyzer()
+    speakerClusterAnalyzer.load()
+    return sentenceAnalyzer, textAnalyzer, dialogueAnalyzer, intentAnalyzer, textCS, keywords, speechClient, speechEmotionAnalyzer, speakerClusterAnalyzer

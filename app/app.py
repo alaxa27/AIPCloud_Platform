@@ -10,6 +10,7 @@ from src.access_points import user as userAP
 from src.access_points.analyze import image, sentence, text, dialogue, extraction, customer, intent, word
 from src.access_points.analyze.sound import speech2text
 from src.access_points.analyze.sound import emotion
+from src.access_points.analyze.sound import clustering
 
 CORS(app)
 
@@ -176,6 +177,13 @@ def speech_emotion_analyzer():
     g.user.verify_access('/analyze/sound/emotion')
     file = request.files['file']
     return emotion.recognition(file, speechEmotionAnalyzer)
+
+@app.route('/analyze/sound/clustering', methods=['POST'])
+@auth.login_required
+def speech_emotion_analyzer():
+    g.user.verify_access('/analyze/sound/clustering')
+    file = request.files['file']
+    return clustering.recognition(file, speakerClusterAnalyzer)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
