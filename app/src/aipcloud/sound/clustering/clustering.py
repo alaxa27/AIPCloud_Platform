@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import time
 import numpy as np
 import pandas as pd
 import librosa
@@ -12,14 +13,16 @@ from sklearn.cluster import AgglomerativeClustering, KMeans, DBSCAN
 import sklearn
 import tensorflow as tf
 from scipy.cluster.hierarchy import dendrogram, linkage
+from sklearn import manifold
 
+from .... import app
 
 class SpeakerClusterAnalyzer:
     def __init__(self):
         self.loaded = False
         self.model = None
 
-    def refFun(S):
+    def refFun(self, S):
     	return np.log10(1 + 10000 * S)
 
     def load(self):
@@ -31,7 +34,17 @@ class SpeakerClusterAnalyzer:
             self.model = model_from_json(loaded_model_json)
             # We load the weights into our model
             self.model.load_weights(
-                os.path.join(os.sep, "/data/sound/clustering/weights.h5"))
+                os.path.join(os.sep, "data/sound/clustering/weights.h5"))
+            cfg = configparser.ConfigParser()
+            cfg.read(os.path.join(os.path.dirname(__file__), 'config.cfg'))
+
+            self.SOUND_FORMAT = cfg.get("IO", "sound_format")
+            self.PARAM_FRAME_LENGTH = int(cfg.get("MEL", "frame_length"))
+            self.PARAM_NUMBER_MELS = int(cfg.get("MEL", "n_mels"))
+            # The number of columns in the dataset (except for index)
+            dataset_shape = (self.PARAM_FRAME_LENGTH / 10) * self.PARAM_NUMBER_MELS
+            self.X_test_vectors = [ np.repeat(0, dataset_shape) ]
+
             self.loaded = True
             print("* Loaded model from disk")
 
@@ -40,19 +53,6 @@ class SpeakerClusterAnalyzer:
             raise UnloadedException()
 
         timeS = time.time()
-        cfg = configparser.ConfigParser()
-        cfg.read(os.path.join(os.path.dirname(__file__), 'config.cfg'))
-
-        SOUND_FORMAT = cfg.get("IO", "sound_format")
-        PARAM_FRAME_LENGTH = int(cfg.get("MEL", "frame_length"))
-        PARAM_NUMBER_MELS = int(cfg.get("MEL", "n_mels"))
-
-        K.set_learning_phase(False)
-
-        # The number of columns in the dataset (except for index)
-        dataset_shape = (PARAM_FRAME_LENGTH / 10) * PARAM_NUMBER_MELS
-        X_test_vectors = [ np.repeat(0, dataset_shape) ]
-
 
         try:
             (signal, samplerate) = sf.read(inputFile)
@@ -60,28 +60,27 @@ class SpeakerClusterAnalyzer:
             print(
                 "Error with chunk file. Unable to perform features extraction on the file.")
             raise Exception()
-
+        signal = librosa.to_mono(np.transpose(signal))
         signal, _ = librosa.effects.trim(signal, top_db=50)
         #spectrogram = librosa.feature.melspectrogram(signal, sr=samplerate, n_fft=1024, hop_length=160, fmin=240, fmax=3000)
         spectrogram = librosa.feature.melspectrogram(signal, sr=samplerate, n_fft=1024, hop_length=160)
-
 
         logSpectrogram = self.refFun(spectrogram)
 
         signalLength = float(len(signal) / samplerate) * 1000
         indexPosition = 0
-        while indexPosition < signalLength - PARAM_FRAME_LENGTH:
-        	row = np.asarray(logSpectrogram[:, int(indexPosition / 10):int((indexPosition + PARAM_FRAME_LENGTH) / 10)]).ravel()
-        	X_test_vectors.append(row)
-        	indexPosition += PARAM_FRAME_LENGTH
-        X_test_vectors = X_test_vectors[1:] # We remove first row which is only 0
+        while indexPosition < signalLength - self.PARAM_FRAME_LENGTH:
+        	row = np.asarray(logSpectrogram[:, int(indexPosition / 10):int((indexPosition + self.PARAM_FRAME_LENGTH) / 10)]).ravel()
+        	self.X_test_vectors.append(row)
+        	indexPosition += self.PARAM_FRAME_LENGTH
+        self.X_test_vectors = self.X_test_vectors[1:] # We remove first row which is only 0
 
         X_test = []
-        for i in range(len(X_test_vectors)):
-        	matrix = np.zeros((PARAM_NUMBER_MELS, int(PARAM_FRAME_LENGTH / 10)))
-        	for l in range(PARAM_NUMBER_MELS):
-        		for m in range(int(PARAM_FRAME_LENGTH / 10)):
-        			matrix[l, m] = X_test_vectors[i][l * int(PARAM_FRAME_LENGTH / 10) + m]
+        for i in range(len(self.X_test_vectors)):
+        	matrix = np.zeros((self.PARAM_NUMBER_MELS, int(self.PARAM_FRAME_LENGTH / 10)))
+        	for l in range(self.PARAM_NUMBER_MELS):
+        		for m in range(int(self.PARAM_FRAME_LENGTH / 10)):
+        			matrix[l, m] = self.X_test_vectors[i][l * int(self.PARAM_FRAME_LENGTH / 10) + m]
         	X_test.append([matrix])
 
         # Creating vector into clustering space
@@ -93,12 +92,6 @@ class SpeakerClusterAnalyzer:
         cosine_tsne = manifold.TSNE(n_components=2, metric='precomputed').fit_transform(cosinus_dist)
 
         Z = linkage(layer_output, metric='cosine', method='complete')
-        dendrogram(
-        	Z,
-        	show_leaf_counts=False,  # otherwise numbers in brackets are counts
-        	leaf_rotation=90.,
-        	leaf_font_size=12.)
-
         minDist = max([row[2] for row in Z])
         nb_clusters = len(Z)
         for i in range(len(Z)-1):
@@ -110,6 +103,35 @@ class SpeakerClusterAnalyzer:
             count = 2
         int(count)
         clustering = AgglomerativeClustering(affinity='cosine', linkage="complete", n_clusters=count).fit_predict(layer_output)
-        clustering_list = list(clustering)
+
+        # Now we need to find indexes when current speaker changes
+        flags = []
+        currentSpeaker = clustering[0]
+        for i in range(1, len(clustering)):
+        	if clustering[i] != currentSpeaker:
+        		currentSpeaker = clustering[i]
+        		flags.append(i)
+
+        finalClustering = []
+        for flag in flags:
+        	fragment = signal[(flag-1)*samplerate:(flag+1)*samplerate]
+        	chroma = librosa.feature.chroma_cens(y=fragment, sr=samplerate)
+        #librosa.output.write_wav("output/test_fragment.wav", test_fragment, samplerate)
+        	bounds = librosa.segment.agglomerative(chroma, 3)
+        	speakerStartPos = (flag-1) + librosa.frames_to_time(bounds, sr=samplerate)[1]
+        	finalClustering.append(float("{0:.3f}".format(speakerStartPos)))
+
+        flags.insert(0, 0)
+        finalClustering.insert(0, 0)
+        result = [[] for i in range(count)]
+
+        for i in range(1, len(flags)):
+            print(flags[i] - 1)
+            n = clustering[flags[i] - 1]
+
+            result[n].append((finalClustering[i-1], finalClustering[i] - 0.001))
+        result[clustering[-1]].append((finalClustering[-1], "EOF"))
+
+
         #clustering = KMeans(n_clusters=4).fit_predict(layer_output)
-        return {'res': clustering_list, 'exec_time': time.time() - timeS}
+        return {'res': result, 'exec_time': time.time() - timeS}

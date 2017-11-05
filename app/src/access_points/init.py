@@ -1,4 +1,5 @@
 from flask import abort, g
+from keras import backend as K
 from ..aipcloud.text import sentiment, extraction
 from ..aipcloud.sound import Speech2Text
 from ..aipcloud.sound.emotion import SpeechEmotionAnalyzer
@@ -9,6 +10,8 @@ from ..aipcloud.sound.clustering import SpeakerClusterAnalyzer
 def initialize():
     #InitializeDB(db)
     # The database is already initialized
+    K.set_learning_phase(1)
+
     import nltk
     nltk.download("punkt")
     nltk.download("stopwords")

@@ -184,7 +184,7 @@ def speech_emotion_analyzer():
 def speaker_cluster_analyzer():
     g.user.verify_access('/analyze/sound/clustering')
     file = request.files['file']
-    count = request.json.get('speaker_count')
+    count = None
     return clustering.recognition(file, count, speakerClusterAnalyzer)
 
 if __name__ == '__main__':
