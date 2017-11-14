@@ -35,10 +35,8 @@ class SpeechEmotionAnalyzer:
 
             self.FRAME_LENGTH = int(cfg.get("MEL", "frame_length"))
             self.NUMBER_MELS = int(cfg.get("MEL", "n_mels"))
-            self.CLASSES = [ "neutral", "calm  ", "happy  ", "sad   ", "angry ", "fearful", "surpris", "disgust" ]
+            self.CLASSES = [ "neutral", "calm  ", "happy  ", "sad   ", "angry ", "fearful", "surprise", "disgust" ]
 
-            dataset_shape = (self.FRAME_LENGTH / 10) * self.NUMBER_MELS
-            self.X_test_vectors = [ np.repeat(0, dataset_shape) ]
 
             print("* Loaded model from disk")
 
@@ -55,6 +53,8 @@ class SpeechEmotionAnalyzer:
                 "Error with chunk file. Unable to perform features extraction on the file.")
             raise Exception()
 
+        dataset_shape = (self.FRAME_LENGTH / 10) * self.NUMBER_MELS
+        X_test_vectors = [ np.repeat(0, dataset_shape) ]
         signal = librosa.to_mono(np.transpose(signal))
         trimmedSignal, _ = librosa.effects.trim(signal, top_db=50)
         spectrogram = librosa.feature.melspectrogram(trimmedSignal, sr=samplerate, n_fft=1024, hop_length=160)
@@ -65,16 +65,16 @@ class SpeechEmotionAnalyzer:
         indexPosition = 0
         while indexPosition < signalLength - self.FRAME_LENGTH:
         	row = np.asarray(logSpectrogram[:, int(indexPosition / 10):int((indexPosition + self.FRAME_LENGTH) / 10)]).ravel()
-        	self.X_test_vectors.append(row)
+        	X_test_vectors.append(row)
         	indexPosition += self.FRAME_LENGTH
 
-        self.X_test_vectors = self.X_test_vectors[1:]
+        X_test_vectors = X_test_vectors[1:]
         X_test = []
-        for i in range(len(self.X_test_vectors)):
+        for i in range(len(X_test_vectors)):
         	matrix = np.zeros((self.NUMBER_MELS, int(self.FRAME_LENGTH / 10)))
         	for l in range(self.NUMBER_MELS):
         		for m in range(int(self.FRAME_LENGTH / 10)):
-        			matrix[l, m] = self.X_test_vectors[i][l * int(self.FRAME_LENGTH / 10) + m]
+        			matrix[l, m] = X_test_vectors[i][l * int(self.FRAME_LENGTH / 10) + m]
         	X_test.append([matrix])
 
         predict = self.model.predict(X_test)
@@ -83,5 +83,4 @@ class SpeechEmotionAnalyzer:
             results.append({})
             for i in range(len(self.CLASSES)):
                 results[k][self.CLASSES[i]] = float(round(predict[k][i], 4))
-
         return {'res': results, 'exec_time': time.time() - timeS}
