@@ -15,8 +15,6 @@ import tensorflow as tf
 from scipy.cluster.hierarchy import dendrogram, linkage
 from sklearn import manifold
 
-from .... import app
-
 class SpeakerClusterAnalyzer:
     def __init__(self):
         self.loaded = False

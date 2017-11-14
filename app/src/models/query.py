@@ -9,5 +9,5 @@ class Query(db.Model):
     timestamp = db.Column(db.Integer, default = int(time()))
     exec_time = db.Column(db.Float)
     request = db.Column(db.String(10000))
-    response = db.Column(db.String(10000))
+    response = db.Column(db.Text(1000000))
     ip_address = db.Column(db.String(20))

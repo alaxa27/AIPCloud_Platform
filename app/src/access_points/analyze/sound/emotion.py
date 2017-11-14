@@ -40,14 +40,7 @@ def recognition(file, speechEmotionAnalyzer):
         analysis = speechEmotionAnalyzer.analyze(file_path + '.wav')
         results = analysis['res']
         data = {
-            'neutral': float(round(results[0], 4)),
-            'happy': float(round(results[1], 4)),
-            'calm': float(round(results[2], 4)),
-            'sad': float(round(results[3], 4)),
-            'angry': float(round(results[4], 4)),
-            'fearful': float(round(results[5], 4)),
-            'disgust': float(round(results[6], 4)),
-            'surprise': float(round(results[7], 4))
+            'emotion': results
             }
         # Save the query into the database
         g.user.save_query('/analyze/sound/emotion', data, analysis['exec_time'])
