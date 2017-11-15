@@ -35,7 +35,7 @@ class SpeechEmotionAnalyzer:
 
             self.FRAME_LENGTH = int(cfg.get("MEL", "frame_length"))
             self.NUMBER_MELS = int(cfg.get("MEL", "n_mels"))
-            self.CLASSES = [ "neutral", "calm  ", "happy  ", "sad   ", "angry ", "fearful", "surprise", "disgust" ]
+            self.CLASSES = [ "neutral", "calm", "happy", "sad", "angry", "fearful", "surprise", "disgust" ]
 
 
             print("* Loaded model from disk")
